@@ -7,12 +7,14 @@ export interface ChapterProgress {
     visited: boolean;
     completed: boolean;
     scrollRatio: number;
+    currentSectionIndex?: number; // Last viewed section index
     lastAnchor?: string;
     updatedAt: number;
 }
 
 export interface ProgressData {
     lastChapter: string; // The ID of the last visited chapter
+    lastSectionIndex?: number; // Global last viewed section index
     chapters: Record<string, ChapterProgress>;
 }
 
@@ -59,10 +61,11 @@ export function useReadingProgress() {
                 visited: true // Always true if updating
             };
 
-            // If we are updating progress, also update lastChapter
-            const newData = {
+            // If we are updating progress, also update lastChapter and lastSectionIndex
+            const newData: ProgressData = {
                 ...prev,
                 lastChapter: chapterId,
+                lastSectionIndex: data.currentSectionIndex ?? prev.lastSectionIndex,
                 chapters: {
                     ...prev.chapters,
                     [chapterId]: updatedChapterData

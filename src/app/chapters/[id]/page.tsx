@@ -46,7 +46,7 @@ export default async function ChapterPage({ params }: PageProps) {
                             </h1>
                         </header>
                         <div className="prose prose-xl prose-slate max-w-none text-gray-800 leading-relaxed">
-                            <SectionNavigator content={chapter.content} />
+                            <SectionNavigator chapterId={chapter.id} content={chapter.content} />
                         </div>
                     </PaperCard>
                 </div>
