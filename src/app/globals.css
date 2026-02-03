@@ -1,26 +1,341 @@
 @import "tailwindcss";
 
+/* OmuDaye Font */
+@font-face {
+  font-family: 'OmuDaye';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+  font-weight: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-1Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-2ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-3Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-4Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-5Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-6SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-7Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'A2z';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2601-6@1.0/에이투지체-9Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* Presentation Font for Navigation */
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-1Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-2ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-3Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-4Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-5Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-6SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-7Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-8ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Presentation';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2404@1.0/Freesentation-9Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* D2Coding Font for Code Blocks */
+@font-face {
+  font-family: 'D2Coding';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/D2Coding.woff') format('woff');
+  font-weight: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --font-body: 'OmuDaye', sans-serif;
+  --font-heading: 'A2z', sans-serif;
+  --font-nav: 'Presentation', sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-highlight: #fff3cd;
+  /* Yellow highlighter */
+  --color-wave: #4b6cb7;
+  /* Blue ballpoint pen */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-family: var(--font-body);
+  font-size: 22px;
+  line-height: 2.0;
+}
+
+/* Paragraph spacing for better readability */
+p {
+  margin-bottom: 1.8em;
+  margin-top: 0.8em;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.heading {
+  font-family: var(--font-heading);
+  margin-top: 2.5em;
+  margin-bottom: 1em;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+/* ~40px */
+h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* ~28.8px */
+h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+/* ~24px */
+
+/* Utility Classes */
+.paper-card {
+  @apply bg-white rounded-lg p-8 md:p-12 mx-auto max-w-5xl;
+}
+
+/* Typography Enhancements */
+.hl {
+  background-color: var(--color-highlight);
+  padding: 0 4px;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  font-weight: normal;
+  /* Highlight replaces bold */
+}
+
+.wave-underline {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--color-wave);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Code Blocks */
+.code-card {
+  @apply bg-[#1e1e1e] text-gray-200 rounded-lg p-6 my-10 overflow-x-auto shadow-md;
+  font-family: 'D2Coding', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.code-card code {
+  font-family: 'D2Coding', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+}
+
+.inline-code {
+  background-color: rgba(135, 131, 120, 0.15);
+  color: #eb5757;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.95em;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Remove top margin from h1 in chapter headers */
+header h1 {
+  margin-top: 0 !important;
+}
+
+/* Increase spacing in prose content for better readability */
+.prose p {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+
+.prose h2 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+/* Image Styles for Handwritten Theme */
+.prose img {
+  border-radius: 8px;
+  box-shadow: 4px 4px 0px 0px rgba(28, 25, 23, 0.1);
+  border: 2px solid #e5e7eb;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  max-width: 80%;
+  /* Don't take full width to look more like an inserted photo/sketch */
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  background-color: white;
+  padding: 1rem;
+}
+
+/* If user puts image in figure with caption */
+.prose figure {
+  text-align: center;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.prose figcaption {
+  font-family: 'OmuDaye', sans-serif;
+  color: #78716c;
+  font-size: 1rem;
+  margin-top: 0.5em;
+}
+
+/* Blockquote styles */
+.prose blockquote {
+  border-left: 4px solid #d1d5db;
+  padding-left: 1rem;
+  color: #57534e;
+  font-style: italic;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  background-color: #fafaf9;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.prose blockquote p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose blockquote ul,
+.prose blockquote ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }

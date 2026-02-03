@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Static Tutoring Site
+
+This is a static, responsive tutoring website built with Next.js 14, TypeScript, and Tailwind CSS. It is designed to render a single Markdown file (`content/tutoring.md`) into a beautiful, chapter-based learning experience.
+
+## Features
+
+- **Static Content Generation**: Parses `tutoring.md` at build time to generate static pages for each chapter.
+- **Progress Tracking**: Locally tracks user reading progress and scroll position using `localStorage`.
+- **Responsive Design**: Mobile-friendly navigation with a drawer menu and desktop sidebar.
+- **Custom Styling**: "Paper-like" aesthetic with custom fonts (OmuDaye, A2z) and syntax highlighting.
+- **Table of Contents**: Automatically generated TOC from markdown headings.
+
+## Project Structure
+
+- `content/tutoring.md`: The single source of truth for the site's content.
+- `src/lib/content.ts`: Logic for parsing markdown and splitting chapters.
+- `src/components`: UI components (Sidebar, MarkdownRenderer, etc.).
+- `src/app`: Next.js App Router pages.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ installed.
+
+### Installation
+
+```bash
+npm install
+```
+
+### Running Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view the site.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Building for Production
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This project is configured for **Static Export**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
+The output will be in the `out/` directory.
 
-## Learn More
+### Deployment
 
-To learn more about Next.js, take a look at the following resources:
+You can deploy the `out/` folder to any static hosting service like GitHub Pages, Vercel, or Netlify.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Vercel / Netlify:**
+- Build Command: `npm run build`
+- Output Directory: `out`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Customization
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Content**: Edit `content/tutoring.md`. Preserve the `# 1장. Title` format for chapter splitting.
+- **Styles**: Edit `src/app/globals.css` for fonts and colors.
