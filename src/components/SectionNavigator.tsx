@@ -35,9 +35,13 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
     // Save progress when section changes
     useEffect(() => {
         if (mounted) {
-            updateChapterProgress(chapterId, { currentSectionIndex: currentSection });
+            const isAtLastSection = currentSection === sections.length - 1;
+            updateChapterProgress(chapterId, {
+                currentSectionIndex: currentSection,
+                completed: isAtLastSection ? true : undefined
+            });
         }
-    }, [currentSection, chapterId, updateChapterProgress, mounted]);
+    }, [currentSection, chapterId, updateChapterProgress, mounted, sections.length]);
 
     // Keyboard navigation
     useEffect(() => {
