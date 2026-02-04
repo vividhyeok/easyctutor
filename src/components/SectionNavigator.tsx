@@ -27,7 +27,7 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
     const [currentSection, setCurrentSection] = useState(0);
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
 
-    const hasNextChapter = parseInt(chapterId) < 8;
+    const hasNextChapter = parseInt(chapterId) < 23;
     const hasPrevChapter = parseInt(chapterId) > 0;
 
     // Load initial section from progress (ONLY on initial page load, not internal nav)
