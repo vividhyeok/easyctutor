@@ -2,7 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { getAllChapters, getChapter } from '@/lib/content';
 import { ChapterController } from '@/components/ChapterController';
-import { SectionNavigator } from '@/components/SectionNavigator';
+import { SectionNavigatorWrapper } from '@/components/SectionNavigatorWrapper';
 import { PaperCard } from '@/components/PaperCard';
 import { ProgressBar } from '@/components/ProgressBar';
 import { TableOfContents } from '@/components/TableOfContents';
@@ -46,7 +46,7 @@ export default async function ChapterPage({ params }: PageProps) {
                             </h1>
                         </header>
                         <div className="prose prose-xl prose-slate max-w-none text-gray-800 leading-relaxed">
-                            <SectionNavigator chapterId={chapter.id} content={chapter.content} />
+                            <SectionNavigatorWrapper chapterId={chapter.id} content={chapter.content} />
                         </div>
                     </PaperCard>
                 </div>
