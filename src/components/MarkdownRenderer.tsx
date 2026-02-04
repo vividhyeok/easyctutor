@@ -10,6 +10,9 @@ import { ArrayMaxViz } from './visualizations/ArrayMaxViz';
 import { ArrayCountViz } from './visualizations/ArrayCountViz';
 import { ArrayReverseViz } from './visualizations/ArrayReverseViz';
 import { LoopBasicViz } from './visualizations/LoopBasicViz';
+import { StringNullViz } from './visualizations/StringNullViz';
+import { PointerBasicViz } from './visualizations/PointerBasicViz';
+import { ArrayPointerViz } from './visualizations/ArrayPointerViz';
 
 interface MarkdownRendererProps {
     content: string;
@@ -22,7 +25,9 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 [rehypeRaw, {
                     passThrough: [
                         'loopbasicviz', 'arrayflowviz', 'arraysumviz', 'arraymaxviz', 'arraycountviz', 'arrayreverseviz',
-                        'LoopBasicViz', 'ArrayFlowViz', 'ArraySumViz', 'ArrayMaxViz', 'ArrayCountViz', 'ArrayReverseViz'
+                        'stringnullviz', 'pointerbasicviz', 'arraypointerviz',
+                        'LoopBasicViz', 'ArrayFlowViz', 'ArraySumViz', 'ArrayMaxViz', 'ArrayCountViz', 'ArrayReverseViz',
+                        'StringNullViz', 'PointerBasicViz', 'ArrayPointerViz'
                     ]
                 }],
                 rehypeSlug
@@ -82,6 +87,18 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 // Chapter 6
                 LoopBasicViz: () => <LoopBasicViz />,
                 loopbasicviz: () => <LoopBasicViz />,
+
+                // Chapter 16
+                StringNullViz: () => <StringNullViz />,
+                stringnullviz: () => <StringNullViz />,
+
+                // Chapter 13
+                PointerBasicViz: () => <PointerBasicViz />,
+                pointerbasicviz: () => <PointerBasicViz />,
+
+                // Chapter 15
+                ArrayPointerViz: () => <ArrayPointerViz />,
+                arraypointerviz: () => <ArrayPointerViz />,
 
                 // Code blocks: custom black card
                 code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode;[key: string]: any }) => {
