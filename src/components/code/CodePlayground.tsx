@@ -102,10 +102,13 @@ export function CodePlayground({
         return {
             style: {
                 display: 'block',
+                width: '100%',
+                minWidth: 'max-content',
                 backgroundColor: isActive ? 'rgba(234, 179, 8, 0.2)' : undefined, // Yellow tint
                 borderLeft: isActive ? '3px solid #eab308' : '3px solid transparent',
                 transition: 'background-color 0.2s',
                 paddingLeft: '1rem',
+                paddingRight: '1rem',
             },
         };
     };
