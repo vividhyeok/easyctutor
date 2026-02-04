@@ -83,16 +83,16 @@ int main(void) {
             simulationSteps={simulationSteps}
             onStepChange={handleStepChange}
             visualizer={
-                <div className="flex flex-col w-full h-full p-6 gap-8 bg-[#fffdf5] font-body text-stone-800">
+                <div className="flex flex-col w-full h-full p-3 md:p-6 gap-4 md:gap-8 bg-[#fffdf5] font-body text-stone-800">
 
                     {/* Visual Diagram Area */}
-                    <div className="flex items-center justify-around py-4">
+                    <div className="flex flex-col md:flex-row items-center justify-around gap-4 py-2 md:py-4">
 
                         {/* Loop Variable */}
-                        <div className="flex flex-col items-center gap-2">
-                            <span className="text-sm font-bold text-stone-500 font-heading">현재 i 값</span>
+                        <div className="flex flex-col items-center gap-1 md:gap-2">
+                            <span className="text-xs md:text-sm font-bold text-stone-500 font-heading">현재 i 값</span>
                             <div
-                                className="w-20 h-20 bg-stone-800 flex items-center justify-center text-3xl font-bold text-white shadow-md transition-all duration-300"
+                                className="w-14 h-14 md:w-20 md:h-20 bg-stone-800 flex items-center justify-center text-xl md:text-3xl font-bold text-white shadow-md transition-all duration-300"
                                 style={{ borderRadius: handDrawnBorder }}
                             >
                                 {iVal}
@@ -100,27 +100,27 @@ int main(void) {
                         </div>
 
                         {/* Flow Blocks */}
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 md:gap-3">
                             {/* Start */}
-                            <div className={`px-4 py-3 border-2 flex flex-col items-center gap-1 transition-colors duration-300 ${stepState === 'init' ? 'border-blue-500 bg-blue-50' : 'border-stone-300 bg-white'
+                            <div className={`px-2 py-2 md:px-4 md:py-3 border-2 flex flex-col items-center gap-0.5 md:gap-1 transition-colors duration-300 ${stepState === 'init' ? 'border-blue-500 bg-blue-50' : 'border-stone-300 bg-white'
                                 }`} style={{ borderRadius: "10px" }}>
-                                <span className="text-xs font-bold text-stone-400">시작</span>
-                                <span className="font-heading text-xl">0</span>
+                                <span className="text-[10px] md:text-xs font-bold text-stone-400">시작</span>
+                                <span className="font-heading text-base md:text-xl">0</span>
                             </div>
 
-                            <ArrowRight className="text-stone-300 self-center" />
+                            <ArrowRight className="text-stone-300 self-center w-4 h-4 md:w-6 md:h-6" />
 
                             {/* Condition */}
-                            <div className={`px-4 py-3 border-2 flex flex-col items-center gap-1 transition-colors duration-300 ${stepState === 'check' ? (iVal < 3 ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : 'border-stone-300 bg-white'
+                            <div className={`px-2 py-2 md:px-4 md:py-3 border-2 flex flex-col items-center gap-0.5 md:gap-1 transition-colors duration-300 ${stepState === 'check' ? (iVal < 3 ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50') : 'border-stone-300 bg-white'
                                 }`} style={{ borderRadius: "10px" }}>
-                                <span className="text-xs font-bold text-stone-400">조건(3보다 작음?)</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="font-heading text-xl">
+                                <span className="text-[10px] md:text-xs font-bold text-stone-400">조건(3보다 작음?)</span>
+                                <div className="flex items-center gap-1 md:gap-2">
+                                    <span className="font-heading text-base md:text-xl">
                                         {iVal} &lt; 3
                                     </span>
                                     {stepState === 'check' && (
                                         <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                                            {iVal < 3 ? <Check className="w-5 h-5 text-green-600" /> : <X className="w-5 h-5 text-red-600" />}
+                                            {iVal < 3 ? <Check className="w-4 h-4 md:w-5 md:h-5 text-green-600" /> : <X className="w-4 h-4 md:w-5 md:h-5 text-red-600" />}
                                         </motion.span>
                                     )}
                                 </div>
@@ -131,12 +131,12 @@ int main(void) {
 
                     {/* Current Action / Narrator */}
                     <div className="flex justify-center">
-                        <div className={`relative px-8 py-4 border-2 border-dashed border-stone-300 rounded-xl bg-white w-full max-w-sm text-center shadow-sm transition-all duration-300 ${stepState === 'body' ? 'border-yellow-400 bg-yellow-50 scale-105' : ''
+                        <div className={`relative px-4 py-3 md:px-8 md:py-4 border-2 border-dashed border-stone-300 rounded-xl bg-white w-full max-w-sm text-center shadow-sm transition-all duration-300 ${stepState === 'body' ? 'border-yellow-400 bg-yellow-50 scale-105' : ''
                             }`}>
-                            <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-2 text-xs font-bold text-stone-400">
+                            <span className="absolute -top-2.5 md:-top-3 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] md:text-xs font-bold text-stone-400">
                                 지금 컴퓨터가 하는 생각
                             </span>
-                            <p className="text-lg font-heading break-keep leading-tight">
+                            <p className="text-sm md:text-lg font-heading break-keep leading-tight">
                                 {stepState === 'init' && "i를 0으로 만들고 시작하자!"}
                                 {stepState === 'check' && (iVal < 3 ? `i가 ${iVal}이니까 3보다 작네? 통과!` : `i가 ${iVal}이네? 3보다 작지 않으니 멈춰!`)}
                                 {stepState === 'body' && `i값 ${iVal}을 출력하자!`}
@@ -146,12 +146,12 @@ int main(void) {
                     </div>
 
                     {/* Output Preview */}
-                    <div className="mt-auto border-t-2 border-stone-200 pt-4 px-2">
-                        <div className="flex items-center gap-2 text-stone-400 text-sm font-bold mb-2">
+                    <div className="mt-auto border-t-2 border-stone-200 pt-3 md:pt-4 px-2">
+                        <div className="flex items-center gap-2 text-stone-400 text-xs md:text-sm font-bold mb-2">
                             <span>출력 결과</span>
                             <div className="h-px bg-stone-200 flex-1"></div>
                         </div>
-                        <div className="flex gap-3 font-mono text-lg text-stone-800 h-8">
+                        <div className="flex gap-2 md:gap-3 font-mono text-base md:text-lg text-stone-800 h-8">
                             {output.map((v, i) => (
                                 <motion.span
                                     key={i}

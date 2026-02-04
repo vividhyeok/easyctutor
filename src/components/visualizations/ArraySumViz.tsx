@@ -82,13 +82,13 @@ int main(void) {
             simulationSteps={simulationSteps}
             onStepChange={handleStepChange}
             visualizer={
-                <div className="flex flex-col items-center justify-center w-full h-full gap-12 relative">
+                <div className="flex flex-col items-center justify-center w-full h-full gap-6 md:gap-12 relative px-2 md:px-0">
 
                     {/* Array Memory Block */}
-                    <div className="flex gap-2 p-4 bg-stone-100 rounded-xl border border-stone-200/50 shadow-inner">
+                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50 shadow-inner">
                         {data.map((val, i) => (
-                            <div key={i} className="flex flex-col items-center gap-2 relative">
-                                <div className={`w-12 h-12 flex items-center justify-center bg-white border-2 rounded-lg font-heading font-bold text-lg transition-colors duration-300 ${i === activeIndex ? 'border-yellow-400 text-stone-900 bg-yellow-50' : 'border-stone-200 text-stone-400'
+                            <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
+                                <div className={`w-9 h-9 md:w-12 md:h-12 flex items-center justify-center bg-white border-2 rounded-lg font-heading font-bold text-sm md:text-lg transition-colors duration-300 ${i === activeIndex ? 'border-yellow-400 text-stone-900 bg-yellow-50' : 'border-stone-200 text-stone-400'
                                     }`}>
                                     {val}
                                     {/* Flying Particle Animation */}
@@ -96,26 +96,26 @@ int main(void) {
                                         {i === activeIndex && currentStep % 2 === 1 && currentStep > 1 && (
                                             <motion.div
                                                 initial={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-                                                animate={{ opacity: 0, x: 0, y: 120, scale: 0.5 }}
+                                                animate={{ opacity: 0, x: 0, y: 80, scale: 0.5 }}
                                                 transition={{ duration: 0.8, ease: "easeInOut" }}
                                                 className="absolute inset-0 bg-yellow-400 rounded-lg z-10 opacity-50"
                                             />
                                         )}
                                     </AnimatePresence>
                                 </div>
-                                <span className="text-xs text-stone-500 font-mono">a[{i}]</span>
+                                <span className="text-[10px] md:text-xs text-stone-500 font-mono">a[{i}]</span>
 
                                 {/* Pointer Arrow */}
                                 {i === activeIndex && (
                                     <motion.div
                                         layoutId="pointer"
-                                        className="absolute -top-8 text-yellow-500"
+                                        className="absolute -top-6 md:-top-8 text-yellow-500"
                                         initial={{ opacity: 0, y: -5 }}
                                         animate={{ opacity: 1, y: 0 }}
                                     >
                                         <div className="flex flex-col items-center">
-                                            <span className="text-xs font-bold font-sans mb-1">i</span>
-                                            <ArrowUp className="rotate-180 w-5 h-5" />
+                                            <span className="text-[10px] md:text-xs font-bold font-sans mb-0.5 md:mb-1">i</span>
+                                            <ArrowUp className="rotate-180 w-4 h-4 md:w-5 md:h-5" />
                                         </div>
                                     </motion.div>
                                 )}
@@ -125,18 +125,18 @@ int main(void) {
 
                     {/* Sum Variable Box */}
                     <div className="flex flex-col items-center relative">
-                        <div className="w-24 h-24 bg-white border-2 border-stone-300 rounded-2xl flex flex-col items-center justify-center shadow-lg relative overflow-hidden">
-                            <span className="text-stone-400 text-xs font-mono absolute top-2 left-3">sum</span>
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-white border-2 border-stone-300 rounded-xl md:rounded-2xl flex flex-col items-center justify-center shadow-lg relative overflow-hidden">
+                            <span className="text-stone-400 text-[10px] md:text-xs font-mono absolute top-1.5 left-2 md:top-2 md:left-3">sum</span>
                             <motion.span
                                 key={sum}
                                 initial={{ scale: 1.2, color: '#eab308' }}
                                 animate={{ scale: 1, color: '#1c1917' }}
-                                className="text-4xl font-heading font-black"
+                                className="text-2xl md:text-4xl font-heading font-black"
                             >
                                 {sum}
                             </motion.span>
                         </div>
-                        <p className="mt-4 text-stone-500 font-sans text-sm h-5">
+                        <p className="mt-2 md:mt-4 text-stone-500 font-sans text-xs md:text-sm h-5 text-center">
                             {activeIndex === -1 ? "변수 초기화 중..." :
                                 activeIndex < 5 ? `a[${activeIndex}] 값을 sum에 더합니다.` :
                                     "모든 덧셈이 완료되었습니다."}

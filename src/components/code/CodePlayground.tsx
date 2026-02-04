@@ -113,45 +113,45 @@ export function CodePlayground({
     return (
         <div className="w-full my-8 bg-white rounded-sm border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)]">
             {/* Header - Simple & Clean */}
-            <div className="flex items-center justify-between px-4 py-3 border-b-2 border-stone-800 bg-[#f5f5f4]">
-                <div className="flex items-center gap-4">
-                    <span className="font-heading font-bold text-lg text-stone-800 tracking-tight">{title}</span>
+            <div className="flex flex-wrap items-center justify-between px-2 py-2 md:px-4 md:py-3 border-b-2 border-stone-800 bg-[#f5f5f4] gap-2">
+                <div className="flex items-center gap-2 md:gap-4">
+                    <span className="font-heading font-bold text-sm md:text-lg text-stone-800 tracking-tight">{title}</span>
 
                     {/* Step Counter */}
-                    <span className="font-mono text-xs font-bold text-stone-400 bg-stone-200 px-2 py-1 rounded">
+                    <span className="font-mono text-[10px] md:text-xs font-bold text-stone-400 bg-stone-200 px-1.5 py-0.5 md:px-2 md:py-1 rounded">
                         STEP {currentStepIndex + 1} / {effectiveSteps.length}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 md:gap-2">
                     {/* Navigation Controls */}
-                    <div className="flex items-center gap-1 mr-2">
+                    <div className="flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
                         <button
                             onClick={() => manualStep('prev')}
                             disabled={currentStepIndex < 0}
-                            className="p-1.5 rounded-md hover:bg-stone-200 text-stone-600 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                            className="p-1 md:p-1.5 rounded-md hover:bg-stone-200 text-stone-600 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="이전 단계"
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                         <button
                             onClick={() => manualStep('next')}
                             disabled={currentStepIndex >= effectiveSteps.length - 1}
-                            className="p-1.5 rounded-md hover:bg-stone-200 text-stone-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                            className="p-1 md:p-1.5 rounded-md hover:bg-stone-200 text-stone-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="다음 단계"
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                     </div>
 
-                    <div className="h-6 w-0.5 bg-stone-300 mx-1"></div>
+                    <div className="h-5 md:h-6 w-0.5 bg-stone-300 mx-0.5 md:mx-1"></div>
 
                     <button
                         onClick={reset}
-                        className="p-1 px-3 text-sm font-bold text-stone-500 hover:text-stone-900 transition-colors font-body"
+                        className="p-1 px-2 md:px-3 text-xs md:text-sm font-bold text-stone-500 hover:text-stone-900 transition-colors font-body"
                         title="처음으로"
                     >
-                        <RotateCcw className="w-4 h-4" />
+                        <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                     <button
                         onClick={() => {
@@ -162,20 +162,20 @@ export function CodePlayground({
                                 setIsPlaying(!isPlaying);
                             }
                         }}
-                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full border-2 text-sm font-bold shadow-sm transition-all active:translate-y-0.5 ${isPlaying
+                        className={`flex items-center gap-1 md:gap-2 px-2 py-1 md:px-4 md:py-1.5 rounded-full border-2 text-xs md:text-sm font-bold shadow-sm transition-all active:translate-y-0.5 ${isPlaying
                             ? 'bg-white border-stone-800 text-stone-800 hover:bg-stone-100'
                             : 'bg-yellow-400 border-stone-900 text-stone-900 hover:bg-yellow-300'
                             }`}
                     >
                         {isPlaying ? (
                             <>
-                                <Pause className="w-4 h-4 fill-current" />
-                                <span className="font-heading">멈춤</span>
+                                <Pause className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+                                <span className="font-heading hidden sm:inline">멈춤</span>
                             </>
                         ) : (
                             <>
-                                <Play className="w-4 h-4 fill-current" />
-                                <span className="font-heading">자동 실행</span>
+                                <Play className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+                                <span className="font-heading hidden sm:inline">자동 실행</span>
                             </>
                         )}
                     </button>
@@ -183,7 +183,7 @@ export function CodePlayground({
             </div>
 
             {/* Content */}
-            <div className={`flex flex-col md:flex-row ${visualizer ? 'min-h-[500px]' : ''}`}>
+            <div className={`flex flex-col md:flex-row ${visualizer ? 'min-h-[350px] md:min-h-[500px]' : ''}`}>
                 {/* Code Panel */}
                 <div className={`flex-1 relative bg-[#1e1e1e] ${visualizer ? 'border-r-2 border-stone-800' : ''}`}>
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-700 to-transparent opacity-20 z-10"></div>

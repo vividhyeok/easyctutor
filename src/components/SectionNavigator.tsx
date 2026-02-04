@@ -30,13 +30,20 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
     const hasNextChapter = parseInt(chapterId) < 8;
     const hasPrevChapter = parseInt(chapterId) > 0;
 
-    // Load initial section from progress
+    // Load initial section from progress (ONLY on initial page load, not internal nav)
     useEffect(() => {
         if (progress && !mounted) {
+            // Only restore section if this is a direct navigation (no hash)
+            // and user is resuming (not starting fresh from home link)
             const savedSection = progress.chapters[chapterId]?.currentSectionIndex;
-            if (savedSection !== undefined && savedSection < sections.length) {
+
+            // Check if we're resuming from the last chapter or starting fresh
+            const isLastChapter = progress.lastChapter === chapterId;
+
+            if (isLastChapter && savedSection !== undefined && savedSection < sections.length) {
                 setCurrentSection(savedSection);
             }
+            // Otherwise start from section 0 (default)
             setMounted(true);
         }
     }, [progress, chapterId, sections.length, mounted]);

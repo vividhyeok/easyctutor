@@ -13,31 +13,31 @@ export function ArrayFlowViz() {
     ];
 
     return (
-        <div className="w-full max-w-2xl mx-auto my-12 p-8 bg-white rounded-xl shadow-lg border border-stone-200">
-            <h3 className="text-center font-heading font-bold text-xl text-stone-800 mb-10">
+        <div className="w-full max-w-2xl mx-auto my-6 md:my-12 p-4 md:p-8 bg-white rounded-xl shadow-lg border border-stone-200">
+            <h3 className="text-center font-heading font-bold text-base md:text-xl text-stone-800 mb-6 md:mb-10">
                 배열 문제 해결의 4단계
             </h3>
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
                 {steps.map((step, i) => (
                     <React.Fragment key={i}>
                         <motion.div
-                            className="flex flex-col items-center gap-3 relative z-10"
+                            className="flex flex-col items-center gap-2 md:gap-3 relative z-10"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.3, duration: 0.5 }}
                         >
                             <motion.div
-                                className="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center border-2 border-stone-200 text-stone-600 shadow-sm"
+                                className="w-12 h-12 md:w-16 md:h-16 bg-stone-100 rounded-xl md:rounded-2xl flex items-center justify-center border-2 border-stone-200 text-stone-600 shadow-sm"
                                 whileHover={{ scale: 1.1, borderColor: '#ca8a04', color: '#ca8a04', backgroundColor: '#fefce8' }}
                             >
-                                <step.icon className="w-8 h-8" />
+                                <step.icon className="w-6 h-6 md:w-8 md:h-8" />
                             </motion.div>
 
                             <div className="text-center">
-                                <div className="font-bold text-stone-900 mb-1">{step.title}</div>
-                                <div className="text-xs text-stone-500 break-keep w-24">{step.desc}</div>
+                                <div className="font-bold text-stone-900 text-sm md:text-base mb-0.5 md:mb-1">{step.title}</div>
+                                <div className="text-[10px] md:text-xs text-stone-500 break-keep w-20 md:w-24">{step.desc}</div>
                             </div>
                         </motion.div>
 
@@ -49,19 +49,19 @@ export function ArrayFlowViz() {
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.3 + 0.15 }}
                             >
-                                <ArrowRight className="w-6 h-6" />
+                                <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
                             </motion.div>
                         )}
 
                         {i < steps.length - 1 && (
                             <motion.div
-                                className="md:hidden text-stone-300 py-2"
+                                className="md:hidden text-stone-300 py-1"
                                 initial={{ opacity: 0 }}
                                 whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.3 + 0.15 }}
                             >
-                                <ArrowRight className="w-6 h-6 rotate-90" />
+                                <ArrowRight className="w-5 h-5 rotate-90" />
                             </motion.div>
                         )}
                     </React.Fragment>

@@ -102,23 +102,23 @@ int main(void) {
             simulationSteps={simulationSteps}
             onStepChange={handleStepChange}
             visualizer={
-                <div className="flex flex-col items-center justify-center w-full h-full gap-10 relative">
+                <div className="flex flex-col items-center justify-center w-full h-full gap-5 md:gap-10 relative px-2 md:px-0">
 
                     {/* Array Block */}
-                    <div className="flex gap-2 p-4 bg-stone-100 rounded-xl border border-stone-200/50">
+                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50">
                         {data.map((val, i) => (
-                            <div key={i} className="flex flex-col items-center gap-2 relative">
-                                <div className={`w-12 h-12 flex items-center justify-center border-2 rounded-lg font-heading font-bold text-lg transition-all duration-300 ${i === activeIndex && i < 5
-                                        ? (checkResult === 'even' ? 'bg-green-100 border-green-500 text-green-700'
-                                            : checkResult === 'odd' ? 'bg-red-50 border-red-300 text-red-300'
-                                                : 'bg-white border-blue-400 text-stone-900')
-                                        : 'bg-white border-stone-200 text-stone-400'
+                            <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
+                                <div className={`w-9 h-9 md:w-12 md:h-12 flex items-center justify-center border-2 rounded-lg font-heading font-bold text-sm md:text-lg transition-all duration-300 ${i === activeIndex && i < 5
+                                    ? (checkResult === 'even' ? 'bg-green-100 border-green-500 text-green-700'
+                                        : checkResult === 'odd' ? 'bg-red-50 border-red-300 text-red-300'
+                                            : 'bg-white border-blue-400 text-stone-900')
+                                    : 'bg-white border-stone-200 text-stone-400'
                                     }`}>
                                     {val}
                                 </div>
                                 {i === activeIndex && i < 5 && (
-                                    <motion.div layoutId="ptr2" className="absolute -top-8 text-blue-500">
-                                        <ArrowUp className="rotate-180 w-5 h-5" />
+                                    <motion.div layoutId="ptr2" className="absolute -top-5 md:-top-8 text-blue-500">
+                                        <ArrowUp className="rotate-180 w-4 h-4 md:w-5 md:h-5" />
                                     </motion.div>
                                 )}
                             </div>
@@ -126,17 +126,17 @@ int main(void) {
                     </div>
 
                     {/* Gate/Check Logic */}
-                    <div className="h-10">
+                    <div className="h-8 md:h-10">
                         <AnimatePresence>
                             {checkResult && (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-sm ${checkResult === 'even' ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-400'
+                                    className={`flex items-center gap-1 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm shadow-sm ${checkResult === 'even' ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-400'
                                         }`}
                                 >
-                                    {checkResult === 'even' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                                    {checkResult === 'even' ? <Check className="w-3 h-3 md:w-4 md:h-4" /> : <X className="w-3 h-3 md:w-4 md:h-4" />}
                                     {checkResult === 'even' ? '짝수입니다! (cnt 증가)' : '짝수가 아닙니다.'}
                                 </motion.div>
                             )}
@@ -145,13 +145,13 @@ int main(void) {
 
                     {/* Count Variable Box */}
                     <div className="flex flex-col items-center relative">
-                        <div className="w-24 h-24 bg-white border-2 border-stone-300 rounded-2xl flex flex-col items-center justify-center shadow-md relative overflow-hidden">
-                            <span className="text-stone-400 text-xs font-mono absolute top-2 left-3">cnt</span>
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-white border-2 border-stone-300 rounded-xl md:rounded-2xl flex flex-col items-center justify-center shadow-md relative overflow-hidden">
+                            <span className="text-stone-400 text-[10px] md:text-xs font-mono absolute top-1.5 left-2 md:top-2 md:left-3">cnt</span>
                             <motion.span
                                 key={cnt}
                                 initial={{ scale: 1.5, color: '#3b82f6' }}
                                 animate={{ scale: 1, color: '#1c1917' }}
-                                className="text-4xl font-heading font-black"
+                                className="text-2xl md:text-4xl font-heading font-black"
                             >
                                 {cnt}
                             </motion.span>

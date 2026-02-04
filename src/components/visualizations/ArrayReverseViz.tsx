@@ -88,22 +88,22 @@ int main(void) {
             simulationSteps={simulationSteps}
             onStepChange={handleStepChange}
             visualizer={
-                <div className="flex flex-col items-center justify-center w-full h-full gap-12 relative">
+                <div className="flex flex-col items-center justify-center w-full h-full gap-6 md:gap-12 relative px-2 md:px-0">
 
                     {/* Array Block */}
-                    <div className="flex gap-2 p-4 bg-stone-100 rounded-xl border border-stone-200/50">
+                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50">
                         {data.map((val, i) => (
-                            <div key={i} className="flex flex-col items-center gap-2 relative">
-                                <span className={`text-xs font-mono mb-1 ${i === activeIndex ? 'text-orange-500 font-bold' : 'text-stone-400'}`}>
+                            <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
+                                <span className={`text-[10px] md:text-xs font-mono mb-0.5 md:mb-1 ${i === activeIndex ? 'text-orange-500 font-bold' : 'text-stone-400'}`}>
                                     {i}
                                 </span>
-                                <div className={`w-12 h-12 flex items-center justify-center border-2 rounded-lg font-heading font-bold text-lg transition-colors duration-300 ${i === activeIndex ? 'border-orange-400 text-stone-900 bg-orange-50' : 'border-stone-200 text-stone-400'
+                                <div className={`w-9 h-9 md:w-12 md:h-12 flex items-center justify-center border-2 rounded-lg font-heading font-bold text-sm md:text-lg transition-colors duration-300 ${i === activeIndex ? 'border-orange-400 text-stone-900 bg-orange-50' : 'border-stone-200 text-stone-400'
                                     }`}>
                                     {val}
                                 </div>
                                 {i === activeIndex && (
-                                    <motion.div layoutId="ptr3" className="absolute -bottom-8 text-orange-500">
-                                        <ArrowUp className="w-5 h-5" />
+                                    <motion.div layoutId="ptr3" className="absolute -bottom-5 md:-bottom-8 text-orange-500">
+                                        <ArrowUp className="w-4 h-4 md:w-5 md:h-5" />
                                     </motion.div>
                                 )}
                             </div>
@@ -111,11 +111,11 @@ int main(void) {
                     </div>
 
                     {/* Output Stream */}
-                    <div className="w-full px-8">
-                        <div className="text-xs text-stone-400 font-mono mb-2 border-b border-stone-200 pb-1 w-full text-left">
+                    <div className="w-full px-4 md:px-8">
+                        <div className="text-[10px] md:text-xs text-stone-400 font-mono mb-1 md:mb-2 border-b border-stone-200 pb-1 w-full text-left">
                             CONSOLE OUTPUT
                         </div>
-                        <div className="flex gap-3 bg-stone-900 text-green-400 p-4 rounded-lg font-mono text-sm h-16 items-center overflow-x-auto">
+                        <div className="flex gap-2 md:gap-3 bg-stone-900 text-green-400 p-3 md:p-4 rounded-lg font-mono text-xs md:text-sm h-12 md:h-16 items-center overflow-x-auto">
                             <AnimatePresence>
                                 {output.map((val, i) => (
                                     <motion.span
@@ -131,7 +131,7 @@ int main(void) {
                                     <motion.span
                                         animate={{ opacity: [0, 1, 0] }}
                                         transition={{ repeat: Infinity, duration: 0.8 }}
-                                        className="w-2 h-4 bg-green-400 inline-block align-middle ml-1"
+                                        className="w-1.5 md:w-2 h-3 md:h-4 bg-green-400 inline-block align-middle ml-1"
                                     />
                                 )}
                             </AnimatePresence>

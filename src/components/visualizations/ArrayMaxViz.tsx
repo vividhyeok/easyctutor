@@ -85,19 +85,19 @@ int main(void) {
             simulationSteps={simulationSteps}
             onStepChange={handleStepChange}
             visualizer={
-                <div className="flex flex-col items-center justify-center w-full h-full gap-10 relative">
+                <div className="flex flex-col items-center justify-center w-full h-full gap-5 md:gap-10 relative px-2 md:px-0">
 
                     {/* Array Block */}
-                    <div className="flex gap-2 p-4 bg-stone-100 rounded-xl border border-stone-200/50">
+                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50">
                         {data.map((val, i) => (
-                            <div key={i} className="flex flex-col items-center gap-2 relative">
-                                <div className={`w-12 h-12 flex items-center justify-center bg-white border-2 rounded-lg font-heading font-bold text-lg transition-colors duration-300 ${i === activeIndex && i < 5 ? 'border-purple-400 text-stone-900 bg-purple-50' : 'border-stone-200 text-stone-400'
+                            <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
+                                <div className={`w-9 h-9 md:w-12 md:h-12 flex items-center justify-center bg-white border-2 rounded-lg font-heading font-bold text-sm md:text-lg transition-colors duration-300 ${i === activeIndex && i < 5 ? 'border-purple-400 text-stone-900 bg-purple-50' : 'border-stone-200 text-stone-400'
                                     }`}>
                                     {val}
                                 </div>
                                 {i === activeIndex && i < 5 && (
-                                    <motion.div layoutId="ptr" className="absolute -top-8 text-purple-500">
-                                        <ArrowUp className="rotate-180 w-5 h-5" />
+                                    <motion.div layoutId="ptr" className="absolute -top-5 md:-top-8 text-purple-500">
+                                        <ArrowUp className="rotate-180 w-4 h-4 md:w-5 md:h-5" />
                                     </motion.div>
                                 )}
                             </div>
@@ -111,7 +111,7 @@ int main(void) {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0 }}
-                                className={`px-4 py-2 rounded-full font-bold text-sm shadow-sm ${comparison.isLarger ? 'bg-green-100 text-green-700' : 'bg-stone-200 text-stone-500'
+                                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full font-bold text-xs md:text-sm shadow-sm ${comparison.isLarger ? 'bg-green-100 text-green-700' : 'bg-stone-200 text-stone-500'
                                     }`}
                             >
                                 {comparison.val} {comparison.isLarger ? '> ' : '<= '} {mx} ?
@@ -122,16 +122,16 @@ int main(void) {
 
                     {/* Max Variable Box */}
                     <div className="flex flex-col items-center relative">
-                        <div className="absolute -top-6 text-yellow-500">
-                            <Crown className="w-8 h-8 fill-current" />
+                        <div className="absolute -top-4 md:-top-6 text-yellow-500">
+                            <Crown className="w-6 h-6 md:w-8 md:h-8 fill-current" />
                         </div>
-                        <div className="w-24 h-24 bg-gradient-to-br from-stone-800 to-stone-900 border-4 border-yellow-500/50 rounded-2xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden">
-                            <span className="text-stone-400 text-xs font-mono absolute top-2 left-3">mx</span>
+                        <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-stone-800 to-stone-900 border-4 border-yellow-500/50 rounded-xl md:rounded-2xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden">
+                            <span className="text-stone-400 text-[10px] md:text-xs font-mono absolute top-1.5 left-2 md:top-2 md:left-3">mx</span>
                             <motion.span
                                 key={mx}
                                 initial={{ scale: 1.5, opacity: 0.5 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                className="text-4xl font-heading font-black text-white"
+                                className="text-2xl md:text-4xl font-heading font-black text-white"
                             >
                                 {mx}
                             </motion.span>
