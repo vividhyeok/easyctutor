@@ -28,8 +28,21 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
     const [currentSection, setCurrentSection] = useState(0);
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
 
-    const hasNextChapter = parseInt(chapterId) < 23;
-    const hasPrevChapter = parseInt(chapterId) > 0;
+    const chNum = parseInt(chapterId, 10);
+    const hasNextChapter = !isNaN(chNum) && chNum < 23;
+    const hasPrevChapter = !isNaN(chNum) && chNum > 0;
+
+    useEffect(() => {
+        console.log('SectionNavigator Debug:', {
+            chapterId,
+            chNum,
+            hasNextChapter,
+            currentSection,
+            totalSections: sections.length,
+            isAtEnd: currentSection === sections.length - 1,
+            buttonDisabled: currentSection === sections.length - 1 && !hasNextChapter
+        });
+    }, [chapterId, chNum, hasNextChapter, currentSection, sections.length]);
 
     // Load initial section logic
     useEffect(() => {
