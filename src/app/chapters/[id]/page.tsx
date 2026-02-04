@@ -33,7 +33,7 @@ export default async function ChapterPage({ params }: PageProps) {
         <>
             <ProgressBar />
             <ChapterController chapterId={chapter.id} />
-            <div className="flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
+            <div className="flex flex-col items-center justify-center p-2 md:p-8 lg:p-12">
                 {/* Main Content */}
                 <div className="w-full max-w-4xl shrink-0">
                     <PaperCard>

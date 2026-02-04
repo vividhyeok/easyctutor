@@ -20,9 +20,9 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
         return (
             <div className="space-y-3">
                 {chapters.map((chapter) => (
-                    <div key={chapter.id} className="flex items-center gap-4 p-4 rounded-lg border border-gray-100 bg-white/50 opacity-50">
-                        <div className="w-6 h-6 rounded-full border-2 border-gray-200" />
-                        <span className="font-heading text-lg text-gray-400">{chapter.title}</span>
+                    <div key={chapter.id} className="flex items-center gap-3 p-3 md:p-4 rounded-lg border border-gray-100 bg-white/50 opacity-50">
+                        <div className="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-200" />
+                        <span className="font-heading text-base md:text-lg text-gray-400">{chapter.title}</span>
                     </div>
                 ))}
             </div>
@@ -81,7 +81,7 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
                             key={chapter.id}
                             href={`/chapters/${chapter.id}`}
                             className={cn(
-                                "flex items-center gap-4 p-4 rounded-lg border transition-all duration-200",
+                                "flex items-center gap-3 p-3 md:p-4 rounded-lg border transition-all duration-200",
                                 isLastActive
                                     ? "border-yellow-400 ring-1 ring-yellow-400 bg-yellow-50"
                                     : "border-gray-100 hover:border-gray-300 hover:bg-white"
@@ -89,17 +89,17 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
                         >
                             <div className="shrink-0">
                                 {isCompleted ? (
-                                    <CheckCircle2 className="w-6 h-6 text-green-500" />
+                                    <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
                                 ) : isStarted ? (
-                                    <Circle className="w-6 h-6 text-yellow-500 fill-yellow-100" />
+                                    <Circle className="w-5 h-5 md:w-6 md:h-6 text-yellow-500 fill-yellow-100" />
                                 ) : (
-                                    <Circle className="w-6 h-6 text-gray-300" />
+                                    <Circle className="w-5 h-5 md:w-6 md:h-6 text-gray-300" />
                                 )}
                             </div>
 
                             <div className="flex-1">
                                 <span className={cn(
-                                    "font-heading text-lg block leading-tight",
+                                    "font-heading text-base md:text-lg block leading-tight",
                                     isCompleted ? "text-gray-500 line-through decoration-gray-300" : "text-gray-900"
                                 )}>
                                     {chapter.title}
@@ -107,7 +107,7 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
                             </div>
 
                             {isLastActive && (
-                                <span className="text-[10px] font-bold text-yellow-700 bg-yellow-200 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                                <span className="text-[9px] md:text-[10px] font-bold text-yellow-700 bg-yellow-200 px-1.5 md:px-2 py-0.5 rounded-full uppercase tracking-wide">
                                     Current
                                 </span>
                             )}

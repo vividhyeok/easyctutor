@@ -158,14 +158,29 @@ body {
   background-color: #ffffff;
   color: #1a1a1a;
   font-family: var(--font-body);
-  font-size: 22px;
-  line-height: 2.0;
+  font-size: 18px;
+  /* Reduced from 22px for mobile */
+  line-height: 1.8;
+}
+
+@media (min-width: 768px) {
+  body {
+    font-size: 22px;
+    line-height: 2.0;
+  }
 }
 
 /* Paragraph spacing for better readability */
 p {
-  margin-bottom: 1.8em;
-  margin-top: 0.8em;
+  margin-bottom: 1.5em;
+  margin-top: 0.6em;
+}
+
+@media (min-width: 768px) {
+  p {
+    margin-bottom: 1.8em;
+    margin-top: 0.8em;
+  }
 }
 
 /* Headings */
@@ -177,33 +192,66 @@ h5,
 h6,
 .heading {
   font-family: var(--font-heading);
-  margin-top: 2.5em;
-  margin-bottom: 1em;
-  line-height: 1.4;
+  margin-top: 1.8em;
+  margin-bottom: 0.8em;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .heading {
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    line-height: 1.4;
+  }
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
+  /* Reduced from 2.5rem */
   font-weight: 700;
 }
 
-/* ~40px */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+}
+
 h2 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  /* Reduced from 1.8rem */
   font-weight: 600;
 }
 
-/* ~28.8px */
+@media (min-width: 768px) {
+  h2 {
+    font-size: 1.8rem;
+  }
+}
+
 h3 {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  /* Reduced from 1.5rem */
   font-weight: 500;
 }
 
-/* ~24px */
+@media (min-width: 768px) {
+  h3 {
+    font-size: 1.5rem;
+  }
+}
 
 /* Utility Classes */
 .paper-card {
-  @apply bg-white rounded-lg p-8 md:p-12 mx-auto max-w-5xl;
+  @apply bg-white rounded-lg p-5 md:p-12 mx-auto max-w-5xl;
+  /* Reduced mobile padding from p-8 to p-5 */
 }
 
 /* Typography Enhancements */
