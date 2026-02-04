@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import GithubSlugger from 'github-slugger';
 import { useReadingProgress } from '@/hooks/useProgress';
+import { useRouter } from 'next/navigation';
 
 interface SectionNavigatorProps {
     chapterId: string;
@@ -15,11 +16,19 @@ interface SectionNavigatorProps {
 export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) {
     const { progress, updateChapterProgress } = useReadingProgress();
     const [mounted, setMounted] = useState(false);
+    const router = useRouter();
 
     // Split content by horizontal rules (---)
-    const sections = content.split(/\r?\n---\r?\n/).filter(s => s.trim().length > 0);
+    const sections = React.useMemo(() => {
+        const s = content.split(/\r?\n\s*---\s*\r?\n/).filter(str => str.trim().length > 0);
+        return s;
+    }, [content]);
+
     const [currentSection, setCurrentSection] = useState(0);
     const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
+
+    const hasNextChapter = parseInt(chapterId) < 8;
+    const hasPrevChapter = parseInt(chapterId) > 0;
 
     // Load initial section from progress
     useEffect(() => {
@@ -55,7 +64,7 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentSection, sections.length]);
+    }, [currentSection, sections.length, hasNextChapter, hasPrevChapter]);
 
     // Scroll to top when section changes
     useEffect(() => {
@@ -70,7 +79,6 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
             const hash = window.location.hash.slice(1); // Remove #
             if (!hash) return;
 
-            // Wait a bit for the current section to render, then find the heading
             setTimeout(() => {
                 let element = document.getElementById(decodeURIComponent(hash));
                 if (element) {
@@ -113,23 +121,21 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
     }, [sections, currentSection]);
 
     const goToNext = () => {
-        setCurrentSection(prev => {
-            if (prev < sections.length - 1) {
-                setDirection(1);
-                return prev + 1;
-            }
-            return prev;
-        });
+        if (currentSection < sections.length - 1) {
+            setDirection(1);
+            setCurrentSection(prev => prev + 1);
+        } else if (hasNextChapter) {
+            router.push(`/chapters/${parseInt(chapterId) + 1}`);
+        }
     };
 
     const goToPrevious = () => {
-        setCurrentSection(prev => {
-            if (prev > 0) {
-                setDirection(-1);
-                return prev - 1;
-            }
-            return prev;
-        });
+        if (currentSection > 0) {
+            setDirection(-1);
+            setCurrentSection(prev => prev - 1);
+        } else if (hasPrevChapter) {
+            router.push(`/chapters/${parseInt(chapterId) - 1}`);
+        }
     };
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -139,7 +145,7 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
         return () => window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
     }, []);
 
-    if (sections.length <= 1) {
+    if (sections.length <= 1 && !hasNextChapter && !hasPrevChapter) {
         return <MarkdownRenderer content={content} />;
     }
 
@@ -165,16 +171,16 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
             >
                 <button
                     onClick={goToPrevious}
-                    disabled={currentSection === 0}
-                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === 0 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                    disabled={currentSection === 0 && !hasPrevChapter}
+                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === 0 && !hasPrevChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
                 >
                     <ChevronLeft className="w-8 h-8 text-stone-800" />
                 </button>
 
                 <button
                     onClick={goToNext}
-                    disabled={currentSection === sections.length - 1}
-                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === sections.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
+                    disabled={currentSection === sections.length - 1 && !hasNextChapter}
+                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === sections.length - 1 && !hasNextChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
                 >
                     <ChevronRight className="w-8 h-8 text-stone-800" />
                 </button>
