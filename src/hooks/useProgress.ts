@@ -47,7 +47,26 @@ export function useReadingProgress() {
         setProgress((prev) => {
             if (!prev) return null;
 
-            const currentChapterData = prev.chapters[chapterId] || {
+            const currentIdInt = parseInt(chapterId);
+            const updatedChapters = { ...prev.chapters };
+
+            // Mark all previous chapters as completed
+            for (let i = 0; i < currentIdInt; i++) {
+                const idStr = i.toString();
+                if (!updatedChapters[idStr] || !updatedChapters[idStr].completed) {
+                    updatedChapters[idStr] = {
+                        ...(updatedChapters[idStr] || {
+                            visited: true,
+                            scrollRatio: 1,
+                            updatedAt: Date.now()
+                        }),
+                        visited: true,
+                        completed: true
+                    };
+                }
+            }
+
+            const currentChapterData = updatedChapters[chapterId] || {
                 visited: false,
                 completed: false,
                 scrollRatio: 0,
@@ -58,18 +77,16 @@ export function useReadingProgress() {
                 ...currentChapterData,
                 ...data,
                 updatedAt: Date.now(),
-                visited: true // Always true if updating
+                visited: true
             };
 
-            // If we are updating progress, also update lastChapter and lastSectionIndex
+            updatedChapters[chapterId] = updatedChapterData;
+
             const newData: ProgressData = {
                 ...prev,
                 lastChapter: chapterId,
                 lastSectionIndex: data.currentSectionIndex ?? prev.lastSectionIndex,
-                chapters: {
-                    ...prev.chapters,
-                    [chapterId]: updatedChapterData
-                }
+                chapters: updatedChapters
             };
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
@@ -77,5 +94,13 @@ export function useReadingProgress() {
         });
     }, []);
 
-    return { progress, updateChapterProgress };
+    const resetProgress = useCallback(() => {
+        const initialData: ProgressData = { lastChapter: '0', chapters: {} };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+        setProgress(initialData);
+        // Refresh page to ensure all components reset state?
+        // Actually state update should be enough if they use the hook correctly.
+    }, []);
+
+    return { progress, updateChapterProgress, resetProgress };
 }

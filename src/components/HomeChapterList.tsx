@@ -4,16 +4,22 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { Chapter } from '@/lib/types';
 import { useReadingProgress } from '@/hooks/useProgress';
-import { CheckCircle2, Circle, ArrowRight, PlayCircle } from 'lucide-react';
+import { CheckCircle2, Circle, ArrowRight, PlayCircle, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
-    const { progress } = useReadingProgress();
+    const { progress, resetProgress } = useReadingProgress();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    const handleReset = () => {
+        if (confirm('정말 학습 진도를 초기화하시겠습니까? 모든 진행 상황이 삭제됩니다.')) {
+            resetProgress();
+        }
+    };
 
     if (!mounted) {
         // SSR Fallback (Skeleton or just list)
@@ -38,10 +44,10 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
         <div className="space-y-6">
             {/* Resume Button */}
             {progress && progress.lastChapter && (
-                <div className="mb-8">
+                <div className="mb-8 flex items-stretch gap-2">
                     <Link
                         href={`/chapters/${progress.lastChapter}`}
-                        className="group flex items-center justify-between p-4 bg-gray-900 text-white rounded-xl shadow-lg hover:bg-gray-800 transition-all transform hover:-translate-y-1"
+                        className="group flex-1 flex items-center justify-between p-4 bg-gray-900 text-white rounded-xl shadow-lg hover:bg-gray-800 transition-all transform hover:-translate-y-1"
                     >
                         <div className="flex items-center gap-3">
                             <PlayCircle className="w-6 h-6 text-yellow-400" />
@@ -54,6 +60,13 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
                         </div>
                         <ArrowRight className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" />
                     </Link>
+                    <button
+                        onClick={handleReset}
+                        className="flex items-center justify-center px-4 bg-white border-2 border-gray-200 text-gray-500 rounded-xl shadow-sm hover:bg-red-50 hover:border-red-300 hover:text-red-500 transition-all"
+                        title="진도 초기화"
+                    >
+                        <RotateCcw className="w-5 h-5" />
+                    </button>
                 </div>
             )}
 
