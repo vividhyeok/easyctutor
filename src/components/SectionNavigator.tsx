@@ -128,23 +128,46 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, [sections, currentSection]);
 
-    const goToNext = () => {
+    const goToNext = React.useCallback(() => {
         if (currentSection < sections.length - 1) {
             setDirection(1);
             setCurrentSection(prev => prev + 1);
         } else if (hasNextChapter) {
             router.push(`/chapters/${parseInt(chapterId) + 1}?pos=start`);
         }
-    };
+    }, [currentSection, sections.length, hasNextChapter, chapterId, router]);
 
-    const goToPrevious = () => {
+    const goToPrevious = React.useCallback(() => {
         if (currentSection > 0) {
             setDirection(-1);
             setCurrentSection(prev => prev - 1);
         } else if (hasPrevChapter) {
             router.push(`/chapters/${parseInt(chapterId) - 1}?pos=end`);
         }
-    };
+    }, [currentSection, hasPrevChapter, chapterId, router]);
+
+    // Scroll to top when section changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentSection]);
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+
+            if (e.key === 'ArrowRight') {
+                goToNext();
+            } else if (e.key === 'ArrowLeft') {
+                goToPrevious();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [goToNext, goToPrevious]);
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     useEffect(() => {
