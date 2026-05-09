@@ -1,94 +1,243 @@
 import 'server-only';
 import fs from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
 import GithubSlugger from 'github-slugger';
-import { Chapter, Section } from './types';
+import { Chapter, ChapterSection, ChapterSummary, Section } from './types';
 
-export type { Chapter, Section };
+export type { Chapter, ChapterSection, ChapterSummary, Section };
 
+const CONTENT_DIR = path.join(process.cwd(), 'content');
+const CHAPTERS_DIR = path.join(CONTENT_DIR, 'chapters');
+const LEGACY_CONTENT_PATHS = [
+    path.join(CONTENT_DIR, 'tutoring.md'),
+    path.join(process.cwd(), 'tutoring.md'),
+];
 
-const CONTENT_PATH = path.join(process.cwd(), 'content', 'tutoring.md');
-
-// Cache the chapters to avoid re-parsing on every call during build
 let cachedChapters: Chapter[] | null = null;
 
-export function getAllChapters(): Chapter[] {
-    if (cachedChapters) return cachedChapters;
+export function getAllChapters(): ChapterSummary[] {
+    return getChapterSummaries();
+}
 
-    if (!fs.existsSync(CONTENT_PATH)) {
-        console.warn('Content file not found at:', CONTENT_PATH);
-        return [];
-    }
-
-    const fileContent = fs.readFileSync(CONTENT_PATH, 'utf-8');
-
-    // Regex to match Chapter Headings: # 0장. 제목 OR # 1장 제목
-    // Matches: #, optional space, digits, "장", optional dot, optional space, rest of line
-    const chapterRegex = /^# ?(\d+)장\.? ?(.*)$/gm;
-
-    const matches = Array.from(fileContent.matchAll(chapterRegex));
-    const chapters: Chapter[] = [];
-
-    for (let i = 0; i < matches.length; i++) {
-        const match = matches[i];
-        const nextMatch = matches[i + 1];
-
-        // index in the full string
-        const startIndex = match.index!;
-        const endIndex = nextMatch ? nextMatch.index! : fileContent.length;
-
-        // Full chapter text including the heading
-        const fullChapterText = fileContent.slice(startIndex, endIndex);
-
-        // Extract title parts
-        const chapterNum = match[1]; // "0", "1"...
-        const chapterTitleText = match[2].trim(); // "제목"
-        const fullTitle = `${chapterNum}장. ${chapterTitleText}`; // Normalize title format
-
-        // Remove the H1 line from the content if we want to render it separately, 
-        // BUT the requirement says "Each chapter page renders from that chapter's H1...".
-        // Actually, usually we render the title in the Hero/Header and the rest in Markdown.
-        // The prompt says: "상단: 장 제목 + 진행률 바; 본문: tutoring.md에서 파싱된 해당 장 chunk를 마크다운 렌더링"
-        // So we should arguably keep the content *after* the H1. 
-        // Let's remove the first line (Heading) to avoid double H1s if we render a custom Header.
-        const contentBody = fullChapterText.replace(/^# .+$/m, '').trim();
-
-        chapters.push({
-            id: chapterNum,
-            title: fullTitle,
-            slug: chapterNum,
-            content: contentBody,
-        });
-    }
-
-    // Handle case where text exists *before* the first chapter? (0장 starts immediately per prompt)
-    // Assuming tutoring.md starts with # 0장...
-
-    cachedChapters = chapters;
-    return chapters;
+export function getChapterSummaries(): ChapterSummary[] {
+    return getChapters().map(toChapterSummary);
 }
 
 export function getChapter(id: string): Chapter | undefined {
-    const chapters = getAllChapters();
-    return chapters.find((c) => c.id === id);
+    return getChapters().find((chapter) => chapter.id === id || chapter.slug === id);
+}
+
+export function getChapterNavigation(id: string): {
+    previousChapter?: ChapterSummary;
+    nextChapter?: ChapterSummary;
+} {
+    const chapters = getChapterSummaries();
+    const currentIndex = chapters.findIndex((chapter) => chapter.id === id || chapter.slug === id);
+
+    return {
+        previousChapter: currentIndex > 0 ? chapters[currentIndex - 1] : undefined,
+        nextChapter: currentIndex >= 0 && currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : undefined,
+    };
 }
 
 export function getTableOfContents(markdownContent: string): Section[] {
-    const slugger = new GithubSlugger();
-    const headingRegex = /^## (.*)$/gm;
-    const sections: Section[] = [];
+    return buildChapterSections(markdownContent).map(toSectionSummary);
+}
 
-    const matches = markdownContent.matchAll(headingRegex);
-    for (const match of matches) {
-        const title = match[1].trim();
-        const slug = slugger.slug(title);
-        console.log(`📋 TOC: "${title}" -> ID: "${slug}"`);
-        sections.push({
-            id: slug,
-            title,
-            level: 2
-        });
+function getChapters(): Chapter[] {
+    if (process.env.NODE_ENV === 'development') {
+        return loadChapters();
     }
 
-    return sections;
+    if (!cachedChapters) {
+        cachedChapters = loadChapters();
+    }
+
+    return cachedChapters;
+}
+
+function loadChapters(): Chapter[] {
+    const chapterFiles = getChapterFiles();
+    const chapters = chapterFiles.length > 0
+        ? chapterFiles.map((filePath, index) => parseChapterDocument(
+            fs.readFileSync(filePath, 'utf-8'),
+            {
+                fileName: path.basename(filePath),
+                fallbackOrder: index,
+            },
+        )).filter(isChapter)
+        : parseLegacyContent();
+
+    return chapters.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id, undefined, { numeric: true }));
+}
+
+function getChapterFiles(): string[] {
+    if (!fs.existsSync(CHAPTERS_DIR)) {
+        return [];
+    }
+
+    return fs.readdirSync(CHAPTERS_DIR, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.md') && !entry.name.startsWith('_'))
+        .map((entry) => path.join(CHAPTERS_DIR, entry.name))
+        .sort((a, b) => {
+            const aOrder = getOrderFromFileName(path.basename(a));
+            const bOrder = getOrderFromFileName(path.basename(b));
+
+            if (aOrder !== undefined && bOrder !== undefined && aOrder !== bOrder) {
+                return aOrder - bOrder;
+            }
+
+            return path.basename(a).localeCompare(path.basename(b), undefined, { numeric: true });
+        });
+}
+
+function parseLegacyContent(): Chapter[] {
+    const legacyPath = LEGACY_CONTENT_PATHS.find((contentPath) => fs.existsSync(contentPath));
+
+    if (!legacyPath) {
+        console.warn('No chapter content found. Add Markdown files to content/chapters.');
+        return [];
+    }
+
+    const fileContent = fs.readFileSync(legacyPath, 'utf-8');
+    const matches = Array.from(fileContent.matchAll(/^#\s+.+$/gm))
+        .filter((match) => /^\d+/.test(match[0].replace(/^#\s+/, '')));
+
+    return matches.map((match, index) => {
+        const startIndex = match.index ?? 0;
+        const nextMatch = matches[index + 1];
+        const endIndex = nextMatch?.index ?? fileContent.length;
+        const chapterContent = fileContent.slice(startIndex, endIndex).trim();
+
+        return parseChapterDocument(chapterContent, {
+            fileName: path.basename(legacyPath),
+            fallbackOrder: index,
+        });
+    }).filter(isChapter);
+}
+
+function parseChapterDocument(rawMarkdown: string, context: { fileName: string; fallbackOrder: number }): Chapter | null {
+    const { data, content } = matter(rawMarkdown);
+    const headingMatch = content.match(/^#\s+(.+)$/m);
+
+    if (!headingMatch) {
+        console.warn(`Skipping ${context.fileName}: missing top-level chapter heading.`);
+        return null;
+    }
+
+    const heading = headingMatch[1].trim();
+    const headingInfo = parseChapterHeading(heading);
+    const fileOrder = getOrderFromFileName(context.fileName);
+    const order = readNumber(data.order) ?? headingInfo.order ?? fileOrder ?? context.fallbackOrder;
+    const id = readString(data.id) ?? String(headingInfo.order ?? fileOrder ?? context.fallbackOrder);
+    const slug = readString(data.slug) ?? id;
+    const displayTitle = readString(data.title) ?? headingInfo.displayTitle;
+    const title = readString(data.navTitle) ?? (headingInfo.order === undefined ? `${id}장. ${displayTitle}` : heading);
+    const contentBody = content.replace(/^#\s+.+\r?\n?/m, '').trim();
+
+    return {
+        id,
+        title,
+        displayTitle,
+        slug,
+        order,
+        content: contentBody,
+        sections: buildChapterSections(contentBody),
+    };
+}
+
+function buildChapterSections(markdownContent: string): ChapterSection[] {
+    const slugger = new GithubSlugger();
+    const chunks = splitMarkdownSections(markdownContent);
+
+    return chunks.map((sectionContent, index) => {
+        const headingMatch = sectionContent.match(/^##\s+(.+)$/m);
+        const title = headingMatch?.[1].trim() ?? `Section ${index + 1}`;
+
+        return {
+            id: headingMatch ? slugger.slug(title) : `section-${index + 1}`,
+            title,
+            level: headingMatch ? 2 : 0,
+            index,
+            content: sectionContent,
+        };
+    });
+}
+
+function splitMarkdownSections(markdownContent: string): string[] {
+    const trimmedContent = markdownContent.trim();
+
+    if (!trimmedContent) {
+        return [];
+    }
+
+    return trimmedContent
+        .split(/\r?\n\s*---\s*\r?\n/)
+        .map((section) => section.trim())
+        .filter(Boolean);
+}
+
+function parseChapterHeading(heading: string): { order?: number; displayTitle: string } {
+    const numberMatch = heading.match(/^(\d+)/);
+    const displayTitle = heading.replace(/^\d+\s*(?:장)?\.?\s*/u, '').trim();
+
+    return {
+        order: numberMatch ? Number(numberMatch[1]) : undefined,
+        displayTitle: displayTitle || heading,
+    };
+}
+
+function getOrderFromFileName(fileName: string): number | undefined {
+    const match = fileName.match(/^(\d+)/);
+    return match ? Number(match[1]) : undefined;
+}
+
+function toChapterSummary(chapter: Chapter): ChapterSummary {
+    return {
+        id: chapter.id,
+        title: chapter.title,
+        displayTitle: chapter.displayTitle,
+        slug: chapter.slug,
+        order: chapter.order,
+        sections: chapter.sections.map(toSectionSummary),
+    };
+}
+
+function toSectionSummary(section: ChapterSection): Section {
+    return {
+        id: section.id,
+        title: section.title,
+        level: section.level,
+        index: section.index,
+    };
+}
+
+function readString(value: unknown): string | undefined {
+    if (typeof value === 'string' && value.trim().length > 0) {
+        return value.trim();
+    }
+
+    if (typeof value === 'number') {
+        return String(value);
+    }
+
+    return undefined;
+}
+
+function readNumber(value: unknown): number | undefined {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+        return value;
+    }
+
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : undefined;
+    }
+
+    return undefined;
+}
+
+function isChapter(chapter: Chapter | null): chapter is Chapter {
+    return chapter !== null;
 }

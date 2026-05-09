@@ -4,58 +4,42 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import type { Chapter, Section } from '@/lib/types';
+import type { ChapterSummary } from '@/lib/types';
 import { useReadingProgress } from '@/hooks/useProgress';
 import { BookOpen, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SidebarProps {
-    chapters: Chapter[];
+    chapters: ChapterSummary[];
     className?: string;
-}
-
-// Client-side TOC extraction
-function extractTOC(content: string): Section[] {
-    const headingRegex = /^## (.*)$/gm;
-    const sections: Section[] = [];
-    const matches = content.matchAll(headingRegex);
-
-    for (const match of matches) {
-        const title = match[1].trim();
-        const slug = title.toLowerCase()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/\s+/g, '-');
-        sections.push({
-            id: slug,
-            title,
-            level: 2
-        });
-    }
-
-    return sections;
 }
 
 export function Sidebar({ chapters, className }: SidebarProps) {
     const pathname = usePathname();
+    const normalizedPathname = pathname.replace(/\/$/, '');
     const { progress } = useReadingProgress();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [expandedChapterId, setExpandedChapterId] = useState<string | null>(null);
 
     // Extract chapter ID from pathname
-    const activeChapterId = pathname.match(/\/chapters\/(\d+)/)?.[1];
+    const activeChapterId = normalizedPathname.match(/\/chapters\/([^/?#]+)/)?.[1];
 
     // Auto-expand active chapter and scroll to it
     useEffect(() => {
-        if (activeChapterId) {
+        if (!activeChapterId) {
+            return;
+        }
+
+        const timer = window.setTimeout(() => {
             setExpandedChapterId(activeChapterId);
 
             // Scroll sidebar to show active chapter at top
-            setTimeout(() => {
-                const element = document.getElementById(`sidebar-chapter-${activeChapterId}`);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 100);
-        }
+            const element = document.getElementById(`sidebar-chapter-${activeChapterId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+
+        return () => window.clearTimeout(timer);
     }, [activeChapterId]);
 
     const toggleChapter = (chapterId: string) => {
@@ -100,10 +84,10 @@ export function Sidebar({ chapters, className }: SidebarProps) {
 
             <nav className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
                 {chapters.map((chapter) => {
-                    const isActive = pathname === `/chapters/${chapter.id}`;
+                    const isActive = normalizedPathname === `/chapters/${chapter.id}`;
                     const isCompleted = progress?.chapters[chapter.id]?.completed;
                     const isExpanded = expandedChapterId === chapter.id;
-                    const toc = isExpanded ? extractTOC(chapter.content) : [];
+                    const toc = isExpanded ? chapter.sections : [];
 
                     return (
                         <div key={chapter.id} id={`sidebar-chapter-${chapter.id}`}>

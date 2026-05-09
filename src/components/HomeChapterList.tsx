@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import type { Chapter } from '@/lib/types';
+import type { ChapterSummary } from '@/lib/types';
 import { useReadingProgress } from '@/hooks/useProgress';
 import { CheckCircle2, Circle, ArrowRight, PlayCircle, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
+export function HomeChapterList({ chapters }: { chapters: ChapterSummary[] }) {
     const { progress, resetProgress } = useReadingProgress();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        const timer = window.setTimeout(() => setMounted(true), 0);
+        return () => window.clearTimeout(timer);
     }, []);
 
     const handleReset = () => {
@@ -38,7 +39,7 @@ export function HomeChapterList({ chapters }: { chapters: Chapter[] }) {
     const lastChapterId = progress?.lastChapter;
     const completedCount = Object.values(progress?.chapters || {}).filter(c => c.completed).length;
     const totalChapters = chapters.length;
-    const completionPercentage = Math.round((completedCount / totalChapters) * 100);
+    const completionPercentage = totalChapters > 0 ? Math.round((completedCount / totalChapters) * 100) : 0;
 
     return (
         <div className="space-y-6">

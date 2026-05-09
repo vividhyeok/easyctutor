@@ -1,8 +1,5 @@
-import Link from 'next/link';
 import { getAllChapters } from '@/lib/content';
-import { PaperCard } from '@/components/PaperCard';
-import { BookOpen, ArrowRight } from 'lucide-react';
-import { HomeChapterList } from '@/components/HomeChapterList'; // We'll create a client component for the progress-aware list
+import { HomeChapterList } from '@/components/HomeChapterList';
 
 export default function HomePage() {
   const chapters = getAllChapters();

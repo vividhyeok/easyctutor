@@ -1,12 +1,24 @@
-export interface Chapter {
-    id: string; // "0", "1", ...
-    title: string; // "0장. 시작하기"
-    slug: string; // "0" (for routing)
-    content: string; // Markdown content
+export interface Section {
+    id: string;
+    title: string;
+    level: number;
+    index: number;
 }
 
-export interface Section {
-    id: string; // "8-6-jaju-haneun-silsu"
-    title: string; // "8-6. 자주 하는 실수 모음"
-    level: number; // 2
+export interface ChapterSection extends Section {
+    content: string;
+}
+
+export interface ChapterSummary {
+    id: string;
+    title: string;
+    displayTitle: string;
+    slug: string;
+    order: number;
+    sections: Section[];
+}
+
+export interface Chapter extends Omit<ChapterSummary, 'sections'> {
+    content: string;
+    sections: ChapterSection[];
 }

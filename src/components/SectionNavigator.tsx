@@ -4,120 +4,104 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
-import GithubSlugger from 'github-slugger';
 import { useReadingProgress } from '@/hooks/useProgress';
 import { useRouter, useSearchParams } from 'next/navigation';
+import type { ChapterSection } from '@/lib/types';
 
 interface SectionNavigatorProps {
     chapterId: string;
-    content: string;
+    sections: ChapterSection[];
+    previousChapterId?: string;
+    nextChapterId?: string;
 }
 
-export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) {
+export function SectionNavigator({
+    chapterId,
+    sections,
+    previousChapterId,
+    nextChapterId,
+}: SectionNavigatorProps) {
     const { progress, updateChapterProgress } = useReadingProgress();
     const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
-
-    // Split content by horizontal rules (---)
-    const sections = React.useMemo(() => {
-        const s = content.split(/\r?\n\s*---\s*\r?\n/).filter(str => str.trim().length > 0);
-        return s;
-    }, [content]);
+    const sectionItems = React.useMemo(() => sections.filter((section) => section.content.trim().length > 0), [sections]);
+    const totalSections = sectionItems.length;
+    const hasNextChapter = Boolean(nextChapterId);
+    const hasPrevChapter = Boolean(previousChapterId);
 
     const [currentSection, setCurrentSection] = useState(0);
-    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
+    const [direction, setDirection] = useState(0);
 
-    const chNum = parseInt(chapterId, 10);
-    const hasNextChapter = !isNaN(chNum) && chNum < 23;
-    const hasPrevChapter = !isNaN(chNum) && chNum > 0;
-
-    useEffect(() => {
-        console.log('SectionNavigator Debug:', {
-            chapterId,
-            chNum,
-            hasNextChapter,
-            currentSection,
-            totalSections: sections.length,
-            isAtEnd: currentSection === sections.length - 1,
-            buttonDisabled: currentSection === sections.length - 1 && !hasNextChapter
-        });
-    }, [chapterId, chNum, hasNextChapter, currentSection, sections.length]);
-
-    // Load initial section logic
-    useEffect(() => {
-        if (!mounted) {
-            const pos = searchParams.get('pos');
-
-            if (pos === 'end') {
-                // If coming from next chapter (prev button), go to last section
-                setCurrentSection(sections.length - 1);
-            } else if (pos === 'start') {
-                // If coming from prev chapter (next button), go to first section
-                setCurrentSection(0);
-            } else if (progress) {
-                // Normal restore (refresh or direct visit)
-                const savedSection = progress.chapters[chapterId]?.currentSectionIndex;
-                const isLastChapter = progress.lastChapter === chapterId;
-
-                if (isLastChapter && savedSection !== undefined && savedSection < sections.length) {
-                    setCurrentSection(savedSection);
-                }
-            }
-            setMounted(true);
-        }
-    }, [progress, chapterId, sections.length, mounted, searchParams]);
-
-    // Save progress when section changes
     useEffect(() => {
         if (mounted) {
-            const isAtLastSection = currentSection === sections.length - 1;
+            return;
+        }
+
+        const pos = searchParams.get('pos');
+        let nextSection = 0;
+
+        if (pos === 'end') {
+            nextSection = Math.max(totalSections - 1, 0);
+        } else if (pos !== 'start' && progress) {
+            const savedSection = progress.chapters[chapterId]?.currentSectionIndex;
+            const isLastChapter = progress.lastChapter === chapterId;
+
+            if (isLastChapter && savedSection !== undefined && savedSection < totalSections) {
+                nextSection = savedSection;
+            }
+        }
+
+        const timer = window.setTimeout(() => {
+            setCurrentSection(nextSection);
+            setMounted(true);
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [progress, chapterId, totalSections, mounted, searchParams]);
+
+    useEffect(() => {
+        if (mounted && totalSections > 0) {
+            const isAtLastSection = currentSection === totalSections - 1;
             updateChapterProgress(chapterId, {
                 currentSectionIndex: currentSection,
                 completed: isAtLastSection ? true : undefined
             });
         }
-    }, [currentSection, chapterId, updateChapterProgress, mounted, sections.length]);
+    }, [currentSection, chapterId, updateChapterProgress, mounted, totalSections]);
 
-    // ... (Existing keyboard and scroll effects remain same) ...
-
-    // Handle URL hash navigation (same as before)
     useEffect(() => {
         const handleHashChange = () => {
-            const hash = window.location.hash.slice(1); // Remove #
+            const hash = window.location.hash.slice(1);
             if (!hash) return;
 
             setTimeout(() => {
-                let element = document.getElementById(decodeURIComponent(hash));
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const decodedHash = decodeURIComponent(hash);
+                const existingElement = document.getElementById(decodedHash)
+                    ?? document.getElementById(`section-panel-${decodedHash}`);
+
+                if (existingElement) {
+                    existingElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     return;
                 }
 
-                const slugger = new GithubSlugger();
-                const decodedHash = decodeURIComponent(hash);
+                const targetSectionIndex = sectionItems.findIndex((section) => {
+                    if (section.id === decodedHash) return true;
 
-                const targetSectionIndex = sections.findIndex((section) => {
-                    const headingMatches = section.match(/^##\s+(.+)$/gm);
-                    if (headingMatches) {
-                        return headingMatches.some(heading => {
-                            const headingText = heading.replace(/^##\s+/, '');
-                            const slug = slugger.slug(headingText);
-                            if (slug === decodedHash) return true;
-                            const chapterNumMatch = decodedHash.match(/^(\d+-\d+)/);
-                            if (chapterNumMatch && headingText.startsWith(chapterNumMatch[1])) return true;
-                            return false;
-                        });
-                    }
-                    return false;
+                    const chapterNumMatch = decodedHash.match(/^(\d+-\d+)/);
+                    return Boolean(chapterNumMatch && section.title.startsWith(chapterNumMatch[1]));
                 });
 
                 if (targetSectionIndex !== -1 && targetSectionIndex !== currentSection) {
                     setDirection(targetSectionIndex > currentSection ? 1 : -1);
                     setCurrentSection(targetSectionIndex);
+
                     setTimeout(() => {
-                        const el = document.getElementById(decodedHash);
-                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        const element = document.getElementById(decodedHash)
+                            ?? document.getElementById(`section-panel-${decodedHash}`);
+                        if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
                     }, 400);
                 }
             }, 100);
@@ -126,32 +110,30 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
         handleHashChange();
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
-    }, [sections, currentSection]);
+    }, [sectionItems, currentSection]);
 
     const goToNext = React.useCallback(() => {
-        if (currentSection < sections.length - 1) {
+        if (currentSection < totalSections - 1) {
             setDirection(1);
             setCurrentSection(prev => prev + 1);
-        } else if (hasNextChapter) {
-            router.push(`/chapters/${parseInt(chapterId) + 1}?pos=start`);
+        } else if (nextChapterId) {
+            router.push(`/chapters/${nextChapterId}?pos=start`);
         }
-    }, [currentSection, sections.length, hasNextChapter, chapterId, router]);
+    }, [currentSection, totalSections, nextChapterId, router]);
 
     const goToPrevious = React.useCallback(() => {
         if (currentSection > 0) {
             setDirection(-1);
             setCurrentSection(prev => prev - 1);
-        } else if (hasPrevChapter) {
-            router.push(`/chapters/${parseInt(chapterId) - 1}?pos=end`);
+        } else if (previousChapterId) {
+            router.push(`/chapters/${previousChapterId}?pos=end`);
         }
-    }, [currentSection, hasPrevChapter, chapterId, router]);
+    }, [currentSection, previousChapterId, router]);
 
-    // Scroll to top when section changes
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [currentSection]);
 
-    // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
@@ -176,21 +158,28 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
         return () => window.removeEventListener('sidebar-toggle', handleSidebarToggle as EventListener);
     }, []);
 
-    if (sections.length <= 1 && !hasNextChapter && !hasPrevChapter) {
-        return <MarkdownRenderer content={content} />;
+    const activeSection = sectionItems[currentSection];
+
+    if (!activeSection) {
+        return null;
+    }
+
+    if (totalSections <= 1 && !hasNextChapter && !hasPrevChapter) {
+        return <MarkdownRenderer content={activeSection.content} />;
     }
 
     return (
         <div className="relative pb-32">
             <AnimatePresence mode="wait" initial={false}>
                 <motion.div
+                    id={`section-panel-${activeSection.id}`}
                     key={currentSection}
                     initial={{ opacity: 0, y: direction * 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: direction * -20 }}
                     transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
-                    <MarkdownRenderer content={sections[currentSection]} />
+                    <MarkdownRenderer content={activeSection.content} />
                 </motion.div>
             </AnimatePresence>
 
@@ -210,8 +199,8 @@ export function SectionNavigator({ chapterId, content }: SectionNavigatorProps) 
 
                 <button
                     onClick={goToNext}
-                    disabled={currentSection === sections.length - 1 && !hasNextChapter}
-                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === sections.length - 1 && !hasNextChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
+                    disabled={currentSection === totalSections - 1 && !hasNextChapter}
+                    className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === totalSections - 1 && !hasNextChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
                 >
                     <ChevronRight className="w-8 h-8 text-stone-800" />
                 </button>

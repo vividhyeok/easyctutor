@@ -1,25 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import type { Chapter } from '@/lib/types';
+import type { ChapterSummary } from '@/lib/types';
 import { useReadingProgress } from '@/hooks/useProgress';
-import { Menu, X, CheckCircle2, Circle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Menu, X, CheckCircle2, Circle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MobileDrawerProps {
-    chapters: Chapter[];
+    chapters: ChapterSummary[];
 }
 
 export function MobileDrawer({ chapters }: MobileDrawerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const pathname = usePathname();
+    const normalizedPathname = pathname.replace(/\/$/, '');
     const { progress } = useReadingProgress();
 
     // Find current chapter info
-    const currentChapterId = pathname.match(/\/chapters\/(\d+)/)?.[1];
+    const currentChapterId = normalizedPathname.match(/\/chapters\/([^/?#]+)/)?.[1];
     const currentChapter = chapters.find(c => c.id === currentChapterId);
 
     // Close drawer on route change
@@ -79,7 +80,7 @@ export function MobileDrawer({ chapters }: MobileDrawerProps) {
 
                             <div className="flex-1 overflow-y-auto p-4 space-y-1">
                                 {chapters.map((chapter) => {
-                                    const isActive = pathname === `/chapters/${chapter.id}`;
+                                    const isActive = normalizedPathname === `/chapters/${chapter.id}`;
                                     const isCompleted = progress?.chapters[chapter.id]?.completed;
 
                                     return (
