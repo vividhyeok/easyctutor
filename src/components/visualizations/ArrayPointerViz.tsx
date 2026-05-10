@@ -22,7 +22,7 @@ export function ArrayPointerViz() {
                 포인터 p가 배열을 타고 이동하는 모습
             </h3>
 
-            <div className="flex justify-center items-end gap-2 md:gap-4 mb-6 h-32">
+            <div className="flex w-full justify-start sm:justify-center items-end gap-2 md:gap-4 mb-6 min-h-40 overflow-x-auto overflow-y-visible px-1 pb-12">
                 {arr.map((val, i) => (
                     <div key={i} className="flex flex-col items-center relative gap-2">
                         {/* Array Box */}
@@ -58,6 +58,7 @@ export function ArrayPointerViz() {
 
             <div className="flex justify-center gap-4">
                 <button
+                    type="button"
                     onClick={handleReset}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm"
                 >
@@ -65,6 +66,7 @@ export function ArrayPointerViz() {
                     처음부터
                 </button>
                 <button
+                    type="button"
                     onClick={handleNext}
                     disabled={index >= 4}
                     className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm transition-all

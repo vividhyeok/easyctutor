@@ -100,7 +100,7 @@ int main(void) {
                         </div>
 
                         {/* Flow Blocks */}
-                        <div className="flex gap-2 md:gap-3">
+                        <div className="flex max-w-full gap-2 md:gap-3 overflow-x-auto overflow-y-visible pb-2">
                             {/* Start */}
                             <div className={`px-2 py-2 md:px-4 md:py-3 border-2 flex flex-col items-center gap-0.5 md:gap-1 transition-colors duration-300 ${stepState === 'init' ? 'border-blue-500 bg-blue-50' : 'border-stone-300 bg-white'
                                 }`} style={{ borderRadius: "10px" }}>

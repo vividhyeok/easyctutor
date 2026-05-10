@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'; // Keep dark theme for code readability
 import { Play, RotateCcw, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useReducedMotion } from 'framer-motion';
 
 interface CodePlaygroundProps {
     code: string;
@@ -15,30 +16,35 @@ interface CodePlaygroundProps {
     title?: string;
 }
 
+const EMPTY_SIMULATION_STEPS: number[] = [];
+
 export function CodePlayground({
     code,
     language = 'c',
     visualizer,
-    simulationSteps = [],
+    simulationSteps = EMPTY_SIMULATION_STEPS,
     onStepChange,
     outputLines = [],
     title = '예제 코드',
 }: CodePlaygroundProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentStepIndex, setCurrentStepIndex] = useState(-1);
-    const lines = code.trim().split('\n');
+    const lines = useMemo(() => code.trim().split('\n'), [code]);
     const [activeLineNumber, setActiveLineNumber] = useState<number | null>(null);
+    const prefersReducedMotion = useReducedMotion();
 
-    const effectiveSteps = simulationSteps.length > 0
-        ? simulationSteps
-        : Array.from({ length: lines.length }, (_, i) => i + 1);
+    const effectiveSteps = useMemo(() => (
+        simulationSteps.length > 0
+            ? simulationSteps
+            : Array.from({ length: lines.length }, (_, i) => i + 1)
+    ), [lines.length, simulationSteps]);
 
     const reset = useCallback(() => {
         setIsPlaying(false);
         setCurrentStepIndex(-1);
         setActiveLineNumber(null);
         onStepChange?.(-1, -1);
-    }, [onStepChange]);
+    }, [onStepChange, setActiveLineNumber, setCurrentStepIndex, setIsPlaying]);
 
     const nextStep = useCallback(() => {
         // Calculate next step first based on current state
@@ -54,7 +60,7 @@ export function CodePlayground({
         const lineNum = effectiveSteps[next];
         setActiveLineNumber(lineNum);
         onStepChange?.(next, lineNum);
-    }, [currentStepIndex, effectiveSteps, onStepChange]);
+    }, [currentStepIndex, effectiveSteps, onStepChange, setActiveLineNumber, setCurrentStepIndex, setIsPlaying]);
 
     const manualStep = useCallback((direction: 'prev' | 'next') => {
         setIsPlaying(false); // Stop auto-play
@@ -84,17 +90,27 @@ export function CodePlayground({
             setActiveLineNumber(lineNum);
             onStepChange?.(next, lineNum);
         }
-    }, [currentStepIndex, effectiveSteps, onStepChange]);
+    }, [currentStepIndex, effectiveSteps, onStepChange, setActiveLineNumber, setCurrentStepIndex, setIsPlaying]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isPlaying) {
-            interval = setInterval(() => {
-                nextStep();
-            }, 1500);
+        if (!isPlaying) {
+            return;
         }
-        return () => clearInterval(interval);
-    }, [isPlaying, nextStep]);
+
+        const interval = window.setInterval(nextStep, prefersReducedMotion ? 2200 : 1500);
+        return () => window.clearInterval(interval);
+    }, [isPlaying, nextStep, prefersReducedMotion]);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPlaying(false);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, []);
 
     // Highlight style
     const lineProps = (lineNumber: number) => {
@@ -114,7 +130,7 @@ export function CodePlayground({
     };
 
     return (
-        <div className="w-full my-8 bg-white rounded-sm border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)]">
+        <div data-learning-interactive className="w-full my-8 bg-white rounded-sm border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)]">
             {/* Header - Simple & Clean */}
             <div className="flex flex-wrap items-center justify-between px-2 py-2 md:px-4 md:py-3 border-b-2 border-stone-800 bg-[#f5f5f4] gap-2">
                 <div className="flex items-center gap-2 md:gap-4">
@@ -130,16 +146,20 @@ export function CodePlayground({
                     {/* Navigation Controls */}
                     <div className="flex items-center gap-0.5 md:gap-1 mr-1 md:mr-2">
                         <button
+                            type="button"
                             onClick={() => manualStep('prev')}
                             disabled={currentStepIndex < 0}
+                            aria-label="이전 실행 단계"
                             className="p-1 md:p-1.5 rounded-md hover:bg-stone-200 text-stone-600 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="이전 단계"
                         >
                             <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                         </button>
                         <button
+                            type="button"
                             onClick={() => manualStep('next')}
                             disabled={currentStepIndex >= effectiveSteps.length - 1}
+                            aria-label="다음 실행 단계"
                             className="p-1 md:p-1.5 rounded-md hover:bg-stone-200 text-stone-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
                             title="다음 단계"
                         >
@@ -150,6 +170,7 @@ export function CodePlayground({
                     <div className="h-5 md:h-6 w-0.5 bg-stone-300 mx-0.5 md:mx-1"></div>
 
                     <button
+                        type="button"
                         onClick={reset}
                         className="p-1 px-2 md:px-3 text-xs md:text-sm font-bold text-stone-500 hover:text-stone-900 transition-colors font-body"
                         title="처음으로"
@@ -157,6 +178,8 @@ export function CodePlayground({
                         <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                     <button
+                        type="button"
+                        aria-label={isPlaying ? '자동 실행 일시정지' : '자동 실행 시작'}
                         onClick={() => {
                             if (currentStepIndex >= effectiveSteps.length - 1) {
                                 reset();
@@ -186,11 +209,11 @@ export function CodePlayground({
             </div>
 
             {/* Content */}
-            <div className={`flex flex-col md:flex-row ${visualizer ? 'min-h-[350px] md:min-h-[500px]' : ''}`}>
+            <div className={`flex min-w-0 flex-col md:flex-row ${visualizer ? 'min-h-[350px] md:min-h-[500px]' : ''}`}>
                 {/* Code Panel */}
-                <div className={`flex-1 relative bg-[#1e1e1e] ${visualizer ? 'border-r-2 border-stone-800' : ''}`}>
+                <div className={`flex-1 min-w-0 relative bg-[#1e1e1e] ${visualizer ? 'md:border-r-2 border-stone-800' : ''}`}>
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stone-700 to-transparent opacity-20 z-10"></div>
-                    <div className="overflow-y-auto custom-scrollbar h-full">
+                    <div className="overflow-auto custom-scrollbar h-full">
                         <SyntaxHighlighter
                             language={language}
                             style={vscDarkPlus}
@@ -204,6 +227,7 @@ export function CodePlayground({
                                 fontSize: '15px',
                                 fontFamily: 'D2Coding, Consolas, monospace',
                                 lineHeight: '1.7',
+                                minWidth: 'max-content',
                             }}
                         >
                             {code}
@@ -213,9 +237,9 @@ export function CodePlayground({
 
                 {/* Visual / Output Panel */}
                 {(visualizer || outputLines.length > 0) && (
-                    <div className="flex-1 bg-[#fffdf5] flex flex-col relative overflow-hidden">
+                    <div className="flex-1 min-w-0 bg-[#fffdf5] flex flex-col relative overflow-x-auto overflow-y-visible">
                         {visualizer ? (
-                            <div className="flex-1 relative overflow-hidden flex items-center justify-center p-6 font-body">
+                            <div className="flex-1 relative min-w-0 overflow-x-auto overflow-y-visible flex items-center justify-center p-4 md:p-6 font-body">
                                 {visualizer}
                             </div>
                         ) : (

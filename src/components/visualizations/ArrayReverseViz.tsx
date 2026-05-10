@@ -91,7 +91,7 @@ int main(void) {
                 <div className="flex flex-col items-center justify-center w-full h-full gap-6 md:gap-12 relative px-2 md:px-0">
 
                     {/* Array Block */}
-                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50">
+                    <div className="flex w-full justify-start sm:justify-center gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50 overflow-x-auto overflow-y-visible pb-8 md:pb-4">
                         {data.map((val, i) => (
                             <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
                                 <span className={`text-[10px] md:text-xs font-mono mb-0.5 md:mb-1 ${i === activeIndex ? 'text-orange-500 font-bold' : 'text-stone-400'}`}>

@@ -88,7 +88,7 @@ int main(void) {
                 <div className="flex flex-col items-center justify-center w-full h-full gap-5 md:gap-10 relative px-2 md:px-0">
 
                     {/* Array Block */}
-                    <div className="flex gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50">
+                    <div className="flex w-full justify-start sm:justify-center gap-1 md:gap-2 p-2 md:p-4 bg-stone-100 rounded-xl border border-stone-200/50 overflow-x-auto overflow-y-visible pb-8 md:pb-4">
                         {data.map((val, i) => (
                             <div key={i} className="flex flex-col items-center gap-1 md:gap-2 relative">
                                 <div className={`w-9 h-9 md:w-12 md:h-12 flex items-center justify-center bg-white border-2 rounded-lg font-heading font-bold text-sm md:text-lg transition-colors duration-300 ${i === activeIndex && i < 5 ? 'border-purple-400 text-stone-900 bg-purple-50' : 'border-stone-200 text-stone-400'

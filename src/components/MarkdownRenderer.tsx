@@ -13,6 +13,11 @@ import { LoopBasicViz } from './visualizations/LoopBasicViz';
 import { StringNullViz } from './visualizations/StringNullViz';
 import { PointerBasicViz } from './visualizations/PointerBasicViz';
 import { ArrayPointerViz } from './visualizations/ArrayPointerViz';
+import { FunctionCallViz } from './visualizations/FunctionCallViz';
+import { ScopeViz } from './visualizations/ScopeViz';
+import { StructViz } from './visualizations/StructViz';
+import { MallocFreeViz } from './visualizations/MallocFreeViz';
+import { FileIOViz } from './visualizations/FileIOViz';
 
 interface MarkdownRendererProps {
     content: string;
@@ -26,8 +31,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                     passThrough: [
                         'loopbasicviz', 'arrayflowviz', 'arraysumviz', 'arraymaxviz', 'arraycountviz', 'arrayreverseviz',
                         'stringnullviz', 'pointerbasicviz', 'arraypointerviz',
+                        'functioncallviz', 'scopeviz', 'structviz', 'mallocfreeviz', 'fileiovic',
                         'LoopBasicViz', 'ArrayFlowViz', 'ArraySumViz', 'ArrayMaxViz', 'ArrayCountViz', 'ArrayReverseViz',
-                        'StringNullViz', 'PointerBasicViz', 'ArrayPointerViz'
+                        'StringNullViz', 'PointerBasicViz', 'ArrayPointerViz',
+                        'FunctionCallViz', 'ScopeViz', 'StructViz', 'MallocFreeViz', 'FileIOViz'
                     ]
                 }],
                 rehypeSlug
@@ -99,6 +106,26 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 // Chapter 15
                 ArrayPointerViz: () => <ArrayPointerViz />,
                 arraypointerviz: () => <ArrayPointerViz />,
+
+                // Chapter 17
+                FunctionCallViz: () => <FunctionCallViz />,
+                functioncallviz: () => <FunctionCallViz />,
+
+                // Chapter 18
+                ScopeViz: () => <ScopeViz />,
+                scopeviz: () => <ScopeViz />,
+
+                // Chapter 19
+                StructViz: () => <StructViz />,
+                structviz: () => <StructViz />,
+
+                // Chapter 20
+                MallocFreeViz: () => <MallocFreeViz />,
+                mallocfreeviz: () => <MallocFreeViz />,
+
+                // Chapter 21
+                FileIOViz: () => <FileIOViz />,
+                fileiovic: () => <FileIOViz />,
 
                 // Code blocks: custom black card
                 code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode;[key: string]: any }) => {

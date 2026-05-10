@@ -22,7 +22,7 @@ export function PointerBasicViz() {
                 포인터 p가 변수 a를 가리키는 과정
             </h3>
 
-            <div className="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-24 mb-10 relative">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-16 md:gap-24 mb-10 relative overflow-visible">
 
                 {/* Pointer Variable Box */}
                 <div className="relative">
@@ -41,14 +41,24 @@ export function PointerBasicViz() {
 
                     {/* Arrow Connection */}
                     {step >= 1 && (
-                        <motion.div
-                            className="absolute top-1/2 left-full w-12 md:w-24 h-0.5 bg-red-500 z-0 origin-left"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <ArrowDown className="absolute -right-3 -top-3 w-6 h-6 text-red-500 -rotate-90" />
-                        </motion.div>
+                        <>
+                            <motion.div
+                                className="hidden md:block absolute top-1/2 left-full w-24 h-0.5 bg-red-500 z-0 origin-left"
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <ArrowDown className="absolute -right-3 -top-3 w-6 h-6 text-red-500 -rotate-90" />
+                            </motion.div>
+                            <motion.div
+                                className="md:hidden absolute top-full left-1/2 h-12 w-0.5 bg-red-500 z-0 origin-top"
+                                initial={{ scaleY: 0 }}
+                                animate={{ scaleY: 1 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <ArrowDown className="absolute -bottom-4 -left-3 w-6 h-6 text-red-500" />
+                            </motion.div>
+                        </>
                     )}
                 </div>
 
@@ -74,7 +84,7 @@ export function PointerBasicViz() {
             </div>
 
             {/* Code Block */}
-            <div className="bg-stone-900 rounded-lg p-4 mb-6 font-mono text-sm text-stone-300 shadow-inner">
+            <div className="bg-stone-900 rounded-lg p-4 mb-6 font-mono text-sm text-stone-300 shadow-inner overflow-x-auto">
                 <div className={`${step === 0 ? 'text-white bg-stone-700/50 -mx-2 px-2 py-0.5 rounded' : ''} transition-colors`}>
                     int a = 10;
                 </div>
@@ -88,6 +98,7 @@ export function PointerBasicViz() {
 
             <div className="flex justify-center gap-4">
                 <button
+                    type="button"
                     onClick={handleReset}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm"
                 >
@@ -95,6 +106,7 @@ export function PointerBasicViz() {
                     처음부터
                 </button>
                 <button
+                    type="button"
                     onClick={handleNext}
                     disabled={step >= 2}
                     className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm transition-all

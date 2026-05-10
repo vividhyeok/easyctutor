@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Play, Pause, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useReducedMotion } from 'framer-motion';
 
 interface StepVisualizerProps {
     totalSteps: number;
@@ -22,6 +22,7 @@ export function StepVisualizer({
     autoPlayInterval = 2000,
 }: StepVisualizerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
+    const prefersReducedMotion = useReducedMotion();
 
     const nextStep = useCallback(() => {
         if (currentStep < totalSteps - 1) {
@@ -43,17 +44,27 @@ export function StepVisualizer({
     }, [onStepChange]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isPlaying) {
-            interval = setInterval(() => {
-                nextStep();
-            }, autoPlayInterval);
+        if (!isPlaying) {
+            return;
         }
-        return () => clearInterval(interval);
+
+        const interval = window.setInterval(nextStep, prefersReducedMotion ? autoPlayInterval + 500 : autoPlayInterval);
+        return () => window.clearInterval(interval);
+    }, [isPlaying, nextStep, autoPlayInterval, prefersReducedMotion]);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPlaying(false);
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [isPlaying, nextStep, autoPlayInterval]);
 
     return (
-        <div className="w-full max-w-2xl mx-auto my-12 border border-stone-200 bg-[#fdfbf7] rounded-xl overflow-hidden shadow-sm">
+        <div data-learning-interactive className="w-full max-w-2xl mx-auto my-12 border border-stone-200 bg-[#fdfbf7] rounded-xl overflow-hidden shadow-sm">
             {/* Header */}
             <div className="px-6 py-4 border-b border-stone-200 flex items-center justify-between bg-stone-50/50">
                 <h4 className="font-heading font-semibold text-stone-700">{title || '시각화 흐름'}</h4>
@@ -63,15 +74,17 @@ export function StepVisualizer({
             </div>
 
             {/* Content Area */}
-            <div className="p-8 min-h-[300px] flex items-center justify-center relative overflow-hidden">
+            <div className="p-6 md:p-8 min-h-[300px] flex items-center justify-center relative overflow-x-auto overflow-y-visible">
                 {children}
             </div>
 
             {/* Controls */}
             <div className="px-6 py-4 bg-stone-50/50 border-t border-stone-200 flex items-center justify-center gap-4">
                 <button
+                    type="button"
                     onClick={prevStep}
                     disabled={currentStep === 0}
+                    aria-label="이전 단계"
                     className="p-2 text-stone-500 hover:text-stone-900 flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="이전 단계"
                 >
@@ -79,7 +92,9 @@ export function StepVisualizer({
                 </button>
 
                 <button
+                    type="button"
                     onClick={() => setIsPlaying(!isPlaying)}
+                    aria-label={isPlaying ? '자동 재생 일시정지' : '자동 재생 시작'}
                     className="w-12 h-12 flex items-center justify-center bg-stone-900 text-white rounded-full hover:bg-stone-800 transition-colors shadow-lg shadow-stone-200"
                     title={isPlaying ? "일시정지" : "재생"}
                 >
@@ -87,8 +102,10 @@ export function StepVisualizer({
                 </button>
 
                 <button
+                    type="button"
                     onClick={nextStep}
                     disabled={currentStep === totalSteps - 1}
+                    aria-label="다음 단계"
                     className="p-2 text-stone-500 hover:text-stone-900 flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     title="다음 단계"
                 >
@@ -96,7 +113,9 @@ export function StepVisualizer({
                 </button>
 
                 <button
+                    type="button"
                     onClick={reset}
+                    aria-label="처음부터 다시 보기"
                     className="absolute right-6 p-2 text-stone-400 hover:text-stone-600 transition-colors"
                     title="처음부터"
                 >

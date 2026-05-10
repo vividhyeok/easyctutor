@@ -23,7 +23,7 @@ export function StringNullViz() {
                 문자열 "HELLO"가 메모리에 저장되는 모습
             </h3>
 
-            <div className="flex justify-center items-center gap-2 md:gap-4 mb-8">
+            <div className="flex w-full justify-start sm:justify-center items-center gap-2 md:gap-4 mb-8 overflow-x-auto overflow-y-visible pb-2">
                 {/* Array Boxes */}
                 {[...Array(6)].map((_, i) => (
                     <div key={i} className="flex flex-col items-center gap-2">

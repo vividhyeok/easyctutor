@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { useReadingProgress } from '@/hooks/useProgress';
@@ -25,6 +25,7 @@ export function SectionNavigator({
     const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const prefersReducedMotion = useReducedMotion();
     const sectionItems = React.useMemo(() => sections.filter((section) => section.content.trim().length > 0), [sections]);
     const totalSections = sectionItems.length;
     const hasNextChapter = Boolean(nextChapterId);
@@ -62,10 +63,8 @@ export function SectionNavigator({
 
     useEffect(() => {
         if (mounted && totalSections > 0) {
-            const isAtLastSection = currentSection === totalSections - 1;
             updateChapterProgress(chapterId, {
                 currentSectionIndex: currentSection,
-                completed: isAtLastSection ? true : undefined
             });
         }
     }, [currentSection, chapterId, updateChapterProgress, mounted, totalSections]);
@@ -117,9 +116,13 @@ export function SectionNavigator({
             setDirection(1);
             setCurrentSection(prev => prev + 1);
         } else if (nextChapterId) {
+            updateChapterProgress(chapterId, {
+                currentSectionIndex: currentSection,
+                completed: true,
+            });
             router.push(`/chapters/${nextChapterId}?pos=start`);
         }
-    }, [currentSection, totalSections, nextChapterId, router]);
+    }, [chapterId, currentSection, totalSections, nextChapterId, router, updateChapterProgress]);
 
     const goToPrevious = React.useCallback(() => {
         if (currentSection > 0) {
@@ -131,12 +134,12 @@ export function SectionNavigator({
     }, [currentSection, previousChapterId, router]);
 
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentSection]);
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }, [currentSection, prefersReducedMotion]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            if (shouldIgnoreSectionShortcut(e)) {
                 return;
             }
 
@@ -174,10 +177,10 @@ export function SectionNavigator({
                 <motion.div
                     id={`section-panel-${activeSection.id}`}
                     key={currentSection}
-                    initial={{ opacity: 0, y: direction * 20 }}
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: direction * 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: direction * -20 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    exit={prefersReducedMotion ? undefined : { opacity: 0, y: direction * -20 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.3, ease: 'easeInOut' }}
                 >
                     <MarkdownRenderer content={activeSection.content} />
                 </motion.div>
@@ -190,6 +193,8 @@ export function SectionNavigator({
                     }`}
             >
                 <button
+                    type="button"
+                    aria-label="이전 섹션으로 이동"
                     onClick={goToPrevious}
                     disabled={currentSection === 0 && !hasPrevChapter}
                     className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === 0 && !hasPrevChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
@@ -198,6 +203,8 @@ export function SectionNavigator({
                 </button>
 
                 <button
+                    type="button"
+                    aria-label="다음 섹션으로 이동"
                     onClick={goToNext}
                     disabled={currentSection === totalSections - 1 && !hasNextChapter}
                     className={`pointer-events-auto w-14 h-14 rounded-full bg-white border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(28,25,23,1)] flex items-center justify-center transition-all hover:scale-110 hover:bg-yellow-50 active:translate-y-1 active:shadow-[2px_2px_0px_0px_rgba(28,25,23,1)] ${currentSection === totalSections - 1 && !hasNextChapter ? 'opacity-30 cursor-not-allowed' : ''}`}
@@ -207,4 +214,27 @@ export function SectionNavigator({
             </div>
         </div>
     );
+}
+
+function shouldIgnoreSectionShortcut(event: KeyboardEvent): boolean {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+        return true;
+    }
+
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) {
+        return false;
+    }
+
+    return Boolean(target.closest([
+        'a',
+        'button',
+        'input',
+        'textarea',
+        'select',
+        '[contenteditable="true"]',
+        '[data-learning-interactive]',
+        'pre',
+        'code',
+    ].join(',')));
 }
