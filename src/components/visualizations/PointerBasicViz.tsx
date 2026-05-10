@@ -2,31 +2,35 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, RotateCcw, MousePointer2 } from 'lucide-react';
+import { ArrowDown } from 'lucide-react';
+import { VizCard } from './VizCard';
 
 export function PointerBasicViz() {
     const [step, setStep] = useState(0);
-    // Steps: 0: initial, 1: p = &a, 2: *p = 20
+    // 0: initial  1: p = &a  2: *p = 20
 
-    const handleNext = () => {
-        if (step < 2) setStep(prev => prev + 1);
-    };
-
-    const handleReset = () => {
-        setStep(0);
-    };
+    const steps = [
+        { label: '시작', next: 'p = &a 실행' },
+        { label: 'p = &a', next: '*p = 20 실행' },
+        { label: '*p = 20', next: '완료' },
+    ];
 
     return (
-        <div className="w-full max-w-2xl mx-auto my-6 md:my-12 p-4 md:p-8 bg-white rounded-xl shadow-lg border border-stone-200">
-            <h3 className="text-center font-heading font-bold text-base md:text-xl text-stone-800 mb-8">
-                포인터 p가 변수 a를 가리키는 과정
-            </h3>
-
-            <div className="flex flex-col md:flex-row justify-center items-center gap-16 md:gap-24 mb-10 relative overflow-visible">
+        <VizCard
+            title="포인터 p가 변수 a를 가리키는 과정"
+            step={step + 1}
+            totalSteps={3}
+            onPrev={step > 0 ? () => setStep(s => s - 1) : undefined}
+            onNext={() => setStep(s => Math.min(s + 1, 2))}
+            onReset={() => setStep(0)}
+            nextLabel={steps[step].next}
+            nextDisabled={step >= 2}
+        >
+            <div className="flex flex-col md:flex-row justify-center items-center gap-12 md:gap-24 mb-8 relative overflow-visible">
 
                 {/* Pointer Variable Box */}
                 <div className="relative">
-                    <div className="text-center mb-2 font-mono font-bold text-stone-600">int *p</div>
+                    <div className="text-center mb-2 font-mono font-bold text-stone-600 text-sm md:text-base">int *p</div>
                     <motion.div
                         className="w-24 h-24 bg-blue-50 border-2 border-blue-200 rounded-xl flex items-center justify-center relative z-10"
                         animate={{ borderColor: step >= 1 ? '#3b82f6' : '#bfdbfe' }}
@@ -39,7 +43,6 @@ export function PointerBasicViz() {
                         </div>
                     </motion.div>
 
-                    {/* Arrow Connection */}
                     {step >= 1 && (
                         <>
                             <motion.div
@@ -64,7 +67,7 @@ export function PointerBasicViz() {
 
                 {/* Regular Variable Box */}
                 <div>
-                    <div className="text-center mb-2 font-mono font-bold text-stone-600">int a</div>
+                    <div className="text-center mb-2 font-mono font-bold text-stone-600 text-sm md:text-base">int a</div>
                     <motion.div
                         className="w-24 h-24 bg-stone-50 border-2 border-stone-200 rounded-xl flex items-center justify-center"
                         animate={{
@@ -83,42 +86,24 @@ export function PointerBasicViz() {
                 </div>
             </div>
 
-            {/* Code Block */}
-            <div className="bg-stone-900 rounded-lg p-4 mb-6 font-mono text-sm text-stone-300 shadow-inner overflow-x-auto">
+            {/* Code Highlight */}
+            <div className="bg-stone-900 rounded-lg p-4 mb-4 font-mono text-sm text-stone-300 shadow-inner overflow-x-auto">
                 <div className={`${step === 0 ? 'text-white bg-stone-700/50 -mx-2 px-2 py-0.5 rounded' : ''} transition-colors`}>
                     int a = 10;
                 </div>
                 <div className={`${step === 1 ? 'text-white bg-green-900/50 -mx-2 px-2 py-0.5 rounded' : ''} transition-colors`}>
-                    int *p = &a;  <span className="text-stone-500 text-xs">// p에 a의 주소(0x100) 대입</span>
+                    int *p = &a; <span className="text-stone-500 text-xs">// p에 a의 주소(0x100) 대입</span>
                 </div>
                 <div className={`${step === 2 ? 'text-white bg-green-900/50 -mx-2 px-2 py-0.5 rounded' : ''} transition-colors`}>
-                    *p = 20;      <span className="text-stone-500 text-xs">// p가 가리키는 곳(*p)을 20으로 변경</span>
+                    *p = 20; <span className="text-stone-500 text-xs">// p가 가리키는 곳의 값을 20으로</span>
                 </div>
             </div>
 
-            <div className="flex justify-center gap-4">
-                <button
-                    type="button"
-                    onClick={handleReset}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    처음부터
-                </button>
-                <button
-                    type="button"
-                    onClick={handleNext}
-                    disabled={step >= 2}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm transition-all
-                        ${step >= 2
-                            ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                            : 'bg-stone-900 text-white hover:bg-stone-800 shadow-md transform hover:scale-105'}
-                    `}
-                >
-                    <MousePointer2 className="w-4 h-4" />
-                    {step === 0 ? 'p = &a 실행' : (step === 1 ? '*p = 20 실행' : '완료')}
-                </button>
+            <div className="text-center text-sm text-stone-600 font-body">
+                {step === 0 && 'a에 10을 저장했어요. p는 아직 아무것도 안 가리켜요.'}
+                {step === 1 && 'p에 a의 주소(0x100)를 넣었어요. 이제 p는 a를 가리켜요.'}
+                {step === 2 && '*p = 20 → p가 가리키는 a의 값이 20으로 바뀌었어요!'}
             </div>
-        </div>
+        </VizCard>
     );
 }

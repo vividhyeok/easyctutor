@@ -18,6 +18,9 @@ import { ScopeViz } from './visualizations/ScopeViz';
 import { StructViz } from './visualizations/StructViz';
 import { MallocFreeViz } from './visualizations/MallocFreeViz';
 import { FileIOViz } from './visualizations/FileIOViz';
+import { VariableViz } from './visualizations/VariableViz';
+import { IfElseViz } from './visualizations/IfElseViz';
+import { ScanfViz } from './visualizations/ScanfViz';
 
 interface MarkdownRendererProps {
     content: string;
@@ -32,9 +35,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                         'loopbasicviz', 'arrayflowviz', 'arraysumviz', 'arraymaxviz', 'arraycountviz', 'arrayreverseviz',
                         'stringnullviz', 'pointerbasicviz', 'arraypointerviz',
                         'functioncallviz', 'scopeviz', 'structviz', 'mallocfreeviz', 'fileiovic',
+                        'variableviz', 'ifelseviz', 'scanfviz',
                         'LoopBasicViz', 'ArrayFlowViz', 'ArraySumViz', 'ArrayMaxViz', 'ArrayCountViz', 'ArrayReverseViz',
                         'StringNullViz', 'PointerBasicViz', 'ArrayPointerViz',
-                        'FunctionCallViz', 'ScopeViz', 'StructViz', 'MallocFreeViz', 'FileIOViz'
+                        'FunctionCallViz', 'ScopeViz', 'StructViz', 'MallocFreeViz', 'FileIOViz',
+                        'VariableViz', 'IfElseViz', 'ScanfViz'
                     ]
                 }],
                 rehypeSlug
@@ -126,6 +131,18 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 // Chapter 21
                 FileIOViz: () => <FileIOViz />,
                 fileiovic: () => <FileIOViz />,
+
+                // Chapter 2
+                VariableViz: () => <VariableViz />,
+                variableviz: () => <VariableViz />,
+
+                // Chapter 5
+                IfElseViz: () => <IfElseViz />,
+                ifelseviz: () => <IfElseViz />,
+
+                // Chapter 7
+                ScanfViz: () => <ScanfViz />,
+                scanfviz: () => <ScanfViz />,
 
                 // Code blocks: custom black card
                 code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode;[key: string]: any }) => {

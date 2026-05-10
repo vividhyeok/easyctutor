@@ -2,19 +2,27 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, RotateCcw } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { VizCard } from './VizCard';
 
 export function StructViz() {
     const [step, setStep] = useState(0);
     // 0: 흩어진 변수들  1: struct로 묶인 모습  2: 멤버 접근(.)
 
-    return (
-        <div className="w-full max-w-2xl mx-auto my-6 md:my-12 p-4 md:p-8 bg-white rounded-xl shadow-lg border border-stone-200">
-            <h3 className="text-center font-heading font-bold text-base md:text-xl text-stone-800 mb-6 md:mb-8">
-                구조체 — 흩어진 변수를 한 덩어리로
-            </h3>
+    const stepLabels = ['구조체로 묶어보기', '멤버 접근해보기', '완료!'];
 
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-6 md:mb-8">
+    return (
+        <VizCard
+            title="구조체 — 흩어진 변수를 한 덩어리로"
+            step={step + 1}
+            totalSteps={3}
+            onPrev={step > 0 ? () => setStep(s => s - 1) : undefined}
+            onNext={() => setStep(s => Math.min(s + 1, 2))}
+            onReset={() => setStep(0)}
+            nextLabel={stepLabels[step]}
+            nextDisabled={step >= 2}
+        >
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-6">
 
                 {/* 왼쪽: 흩어진 변수들 */}
                 <motion.div
@@ -73,7 +81,7 @@ export function StructViz() {
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: i * 0.15 }}
-                                        className={`flex items-center justify-between px-3 py-2 border-b last:border-b-0 border-yellow-200 ${f.color} ${step === 2 ? 'hover:bg-yellow-100' : ''}`}
+                                        className={`flex items-center justify-between px-3 py-2 border-b last:border-b-0 border-yellow-200 ${f.color}`}
                                     >
                                         <span className="font-mono text-xs md:text-sm font-bold text-stone-600">
                                             s.
@@ -99,7 +107,7 @@ export function StructViz() {
                     <motion.div
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-stone-900 rounded-lg p-4 mb-5 font-mono text-sm text-stone-300 shadow-inner"
+                        className="bg-stone-900 rounded-lg p-3 md:p-4 mb-4 font-mono text-sm text-stone-300 shadow-inner"
                     >
                         <div className="text-stone-500 text-xs mb-2">// 이렇게 접근해요</div>
                         <div><span className="text-yellow-400">s.name</span>  → "kim"</div>
@@ -110,30 +118,11 @@ export function StructViz() {
             </AnimatePresence>
 
             {/* 설명 */}
-            <div className="bg-stone-50 rounded-lg px-4 py-3 mb-5 text-sm text-stone-600 text-center font-body">
+            <div className="bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 text-sm text-stone-600 text-center font-body min-h-[48px] flex items-center justify-center">
                 {step === 0 && '변수가 제각각 흩어져 있어요. 학생이 많아지면 관리하기 힘들어요.'}
                 {step === 1 && '구조체로 묶으면 s 하나에 이름, 학번, 점수가 다 들어가요!'}
                 {step === 2 && 's.name, s.id처럼 점(.)으로 원하는 칸에 접근할 수 있어요.'}
             </div>
-
-            <div className="flex justify-center gap-3">
-                <button
-                    type="button"
-                    onClick={() => setStep(0)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    처음부터
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setStep(s => Math.min(s + 1, 2))}
-                    disabled={step >= 2}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm transition-all ${step >= 2 ? 'bg-stone-200 text-stone-400 cursor-not-allowed' : 'bg-stone-900 text-white hover:bg-stone-800 shadow-md transform hover:scale-105'}`}
-                >
-                    {step === 0 ? '구조체로 묶어보기' : step === 1 ? '멤버 접근해보기' : '완료!'}
-                </button>
-            </div>
-        </div>
+        </VizCard>
     );
 }

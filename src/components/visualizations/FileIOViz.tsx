@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Keyboard, FileText, Monitor, ArrowRight } from 'lucide-react';
+import { VizCard } from './VizCard';
 
 export function FileIOViz() {
     const writeFlow = [
@@ -51,11 +52,7 @@ export function FileIOViz() {
     );
 
     return (
-        <div className="w-full max-w-2xl mx-auto my-6 md:my-12 p-4 md:p-8 bg-white rounded-xl shadow-lg border border-stone-200">
-            <h3 className="text-center font-heading font-bold text-base md:text-xl text-stone-800 mb-6 md:mb-8">
-                파일 입출력의 흐름
-            </h3>
-
+        <VizCard title="파일 입출력의 흐름">
             <div className="flex flex-col gap-5 md:gap-8">
                 <FlowRow items={writeFlow} title="📝 파일에 쓰기 (fopen + fprintf + fclose)" delay={0} />
 
@@ -64,7 +61,7 @@ export function FileIOViz() {
                 <FlowRow items={readFlow} title="📖 파일에서 읽기 (fopen + fscanf + fclose)" delay={0.1} />
             </div>
 
-            <div className="mt-6 md:mt-8 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
+            <div className="mt-5 md:mt-8 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
                 {[
                     { step: '① fopen', desc: '"w"(쓰기) 또는 "r"(읽기) 모드로 파일 열기', color: 'bg-yellow-50 border-yellow-300' },
                     { step: '② 읽기/쓰기', desc: 'fprintf로 파일에 쓰고, fscanf로 파일에서 읽기', color: 'bg-blue-50 border-blue-300' },
@@ -83,6 +80,6 @@ export function FileIOViz() {
                     </motion.div>
                 ))}
             </div>
-        </div>
+        </VizCard>
     );
 }

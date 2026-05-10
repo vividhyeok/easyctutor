@@ -2,83 +2,68 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, RotateCcw, ChevronRight } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
+import { VizCard } from './VizCard';
 
 export function ArrayPointerViz() {
     const [index, setIndex] = useState(0);
     const arr = [10, 20, 30, 40, 50];
 
-    const handleNext = () => {
-        if (index < 4) setIndex(prev => prev + 1);
-    };
-
-    const handleReset = () => {
-        setIndex(0);
-    };
-
     return (
-        <div className="w-full max-w-2xl mx-auto my-6 md:my-12 p-4 md:p-8 bg-white rounded-xl shadow-lg border border-stone-200">
-            <h3 className="text-center font-heading font-bold text-base md:text-xl text-stone-800 mb-8">
-                포인터 p가 배열을 타고 이동하는 모습
-            </h3>
-
-            <div className="flex w-full justify-start sm:justify-center items-end gap-2 md:gap-4 mb-6 min-h-40 overflow-x-auto overflow-y-visible px-1 pb-12">
+        <VizCard
+            title="포인터 p가 배열을 타고 이동하는 모습"
+            step={index + 1}
+            totalSteps={arr.length}
+            onPrev={index > 0 ? () => setIndex(i => i - 1) : undefined}
+            onNext={() => setIndex(i => Math.min(i + 1, arr.length - 1))}
+            onReset={() => setIndex(0)}
+            nextLabel="p++ (다음 칸으로)"
+            nextDisabled={index >= arr.length - 1}
+        >
+            <div className="flex w-full justify-start sm:justify-center items-end gap-2 md:gap-4 mb-6 min-h-36 overflow-x-auto overflow-y-visible px-1 pb-12">
                 {arr.map((val, i) => (
-                    <div key={i} className="flex flex-col items-center relative gap-2">
-                        {/* Array Box */}
-                        <div className={`w-12 h-12 md:w-16 md:h-16 border-2 rounded-lg flex items-center justify-center text-lg md:text-xl font-bold font-mono shadow-sm transition-colors
-                            ${i === index ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-stone-200 text-stone-500'}
-                        `}>
+                    <div key={i} className="flex flex-col items-center relative gap-2 flex-shrink-0">
+                        <motion.div
+                            className={`w-12 h-12 md:w-16 md:h-16 border-2 rounded-lg flex items-center justify-center text-base md:text-xl font-bold font-mono shadow-sm transition-colors duration-200
+                                ${i === index ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-stone-200 text-stone-500'}
+                            `}
+                            animate={{ scale: i === index ? 1.1 : 1 }}
+                            transition={{ duration: 0.2 }}
+                        >
                             {val}
-                        </div>
+                        </motion.div>
                         <div className="text-xs text-stone-400 font-mono">a[{i}]</div>
 
-                        {/* Pointer Indicator */}
                         {i === index && (
                             <motion.div
-                                className="absolute -bottom-10 flex flex-col items-center text-blue-600 font-bold"
-                                layoutId="pointer"
+                                className="absolute -bottom-11 flex flex-col items-center text-blue-600 font-bold"
+                                layoutId="ptr-indicator"
                             >
-                                <ArrowUp className="w-6 h-6" />
-                                <div className="text-sm font-mono mt-1">*p</div>
+                                <ArrowUp className="w-5 h-5 md:w-6 md:h-6" />
+                                <div className="text-xs md:text-sm font-mono mt-0.5">p</div>
                             </motion.div>
                         )}
                     </div>
                 ))}
             </div>
 
-            <div className="bg-stone-50 p-4 rounded-lg border border-stone-200 mb-6 text-center">
-                <div className="font-mono text-lg font-bold text-stone-800 mb-1">
-                    printf("%d", *p); <span className="text-blue-600">👉 {arr[index]}</span>
+            <div className="bg-stone-900 rounded-lg p-3 md:p-4 font-mono text-sm text-stone-300 mb-4">
+                <div className="text-stone-500 text-xs mb-2">// 현재 상태</div>
+                <div>
+                    <span className="text-yellow-400">*p</span>
+                    <span className="text-stone-300"> == </span>
+                    <span className="text-green-400">a[{index}]</span>
+                    <span className="text-stone-300"> == </span>
+                    <span className="text-white font-bold">{arr[index]}</span>
                 </div>
-                <div className="text-sm text-stone-500">
-                    현재 p는 a[{index}]를 가리키고 있어요. (주소 + {index}칸)
-                </div>
+                <div className="text-stone-500 mt-1 text-xs">// p는 시작 주소에서 {index}칸 이동한 위치</div>
             </div>
 
-            <div className="flex justify-center gap-4">
-                <button
-                    type="button"
-                    onClick={handleReset}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition-colors font-medium text-sm"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    처음부터
-                </button>
-                <button
-                    type="button"
-                    onClick={handleNext}
-                    disabled={index >= 4}
-                    className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium text-sm transition-all
-                        ${index >= 4
-                            ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                            : 'bg-stone-900 text-white hover:bg-stone-800 shadow-md transform hover:scale-105'}
-                    `}
-                >
-                    <ChevronRight className="w-4 h-4" />
-                    p++ (다음 칸으로)
-                </button>
+            <div className="text-center text-sm text-stone-600 font-body">
+                {index === 0 && 'p는 배열의 첫 번째 칸(a[0])을 가리키고 있어요.'}
+                {index > 0 && index < 4 && `p++를 ${index}번 했어요. 지금은 a[${index}](= ${arr[index]})을 가리켜요.`}
+                {index === 4 && `배열 끝에 도달했어요! a[4](= ${arr[4]})를 가리켜요.`}
             </div>
-        </div>
+        </VizCard>
     );
 }
