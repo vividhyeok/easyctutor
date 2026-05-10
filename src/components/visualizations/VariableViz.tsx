@@ -22,8 +22,8 @@ export function VariableViz() {
     return (
         <VizCard
             title="변수 선언 — 메모리에 이름표 붙이기"
-            step={step}
-            totalSteps={VARS.length}
+            step={step + 1}
+            totalSteps={VARS.length + 1}
             onPrev={step > 0 ? () => setStep(s => s - 1) : undefined}
             onNext={() => setStep(s => Math.min(s + 1, VARS.length))}
             onReset={() => setStep(0)}

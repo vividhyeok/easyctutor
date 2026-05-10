@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Keyboard, ArrowRight } from 'lucide-react';
 import { VizCard } from './VizCard';
@@ -10,20 +10,33 @@ export function ScanfViz() {
     const [typed, setTyped] = useState('');
     const [stored, setStored] = useState<number | null>(null);
 
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
     const DEMO_VALUE = 42;
+
+    const clearTimers = () => {
+        if (intervalRef.current !== null) { clearInterval(intervalRef.current); intervalRef.current = null; }
+        if (timeoutRef.current !== null) { clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+    };
+
+    useEffect(() => () => clearTimers(), []);
 
     const handleNext = () => {
         if (step === 0) {
             setStep(1);
-            // 타이핑 애니메이션 시뮬레이션
             let i = 0;
             const str = String(DEMO_VALUE);
-            const interval = setInterval(() => {
+            intervalRef.current = setInterval(() => {
                 i++;
                 setTyped(str.slice(0, i));
                 if (i >= str.length) {
-                    clearInterval(interval);
-                    setTimeout(() => setStep(2), 400);
+                    clearInterval(intervalRef.current!);
+                    intervalRef.current = null;
+                    timeoutRef.current = setTimeout(() => {
+                        setStep(2);
+                        timeoutRef.current = null;
+                    }, 400);
                 }
             }, 200);
         } else if (step === 2) {
@@ -32,23 +45,36 @@ export function ScanfViz() {
         }
     };
 
+    const handlePrev = () => {
+        if (step === 3) {
+            setStored(null);
+            setStep(2);
+        } else if (step === 2) {
+            // step 1 is animation-only — skip it entirely on backwards navigation
+            setTyped('');
+            setStep(0);
+        }
+        // step 0 and step 1: no prev (step 1 is mid-animation, can't interrupt)
+    };
+
     const handleReset = () => {
+        clearTimers();
         setStep(0);
         setTyped('');
         setStored(null);
     };
 
-    const stepLabels = ['키보드 입력 시작', 'Enter 누르기', '완료'];
+    const stepLabels = ['키보드 입력 시작', '입력 중...', 'Enter 누르기', '완료'];
 
     return (
         <VizCard
             title="scanf — 키보드 입력이 변수로 들어오는 과정"
-            step={step}
-            totalSteps={3}
-            onPrev={step > 0 && step !== 1 ? () => { setStep(s => s - 1); if (step === 3) { setStored(null); setTyped(''); setStep(2); } } : undefined}
+            step={step + 1}
+            totalSteps={4}
+            onPrev={step > 0 && step !== 1 ? handlePrev : undefined}
             onNext={step < 3 && step !== 1 ? handleNext : undefined}
             onReset={handleReset}
-            nextLabel={step < 3 ? stepLabels[step] : '완료'}
+            nextLabel={stepLabels[step]}
             nextDisabled={step >= 3 || step === 1}
         >
             {/* 흐름 다이어그램 */}
@@ -148,7 +174,7 @@ export function ScanfViz() {
             {/* 설명 */}
             <div className="bg-stone-50 border border-stone-200 rounded-lg px-4 py-3 text-sm font-body text-center min-h-[48px] flex items-center justify-center">
                 {step === 0 && 'int age; — age라는 이름의 칸을 준비했어요. 아직 값은 없어요.'}
-                {step === 1 && `키보드에서 숫자를 입력하는 중이에요...`}
+                {step === 1 && '키보드에서 숫자를 입력하는 중이에요...'}
                 {step === 2 && `숫자 ${DEMO_VALUE}을 다 입력했어요. Enter를 누르면 scanf가 age에 넣어줘요!`}
                 {step === 3 && <span className="text-green-700 font-bold">age에 {stored}가 저장됐어요! &amp;age는 "age가 있는 메모리 주소"를 알려줘요.</span>}
             </div>

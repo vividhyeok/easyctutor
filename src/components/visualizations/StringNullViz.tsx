@@ -17,8 +17,8 @@ export function StringNullViz() {
     return (
         <VizCard
             title={`문자열 "HELLO"가 메모리에 저장되는 모습`}
-            step={step}
-            totalSteps={maxStep}
+            step={step + 1}
+            totalSteps={maxStep + 1}
             onPrev={step > 0 ? () => setStep(s => s - 1) : undefined}
             onNext={() => setStep(s => Math.min(s + 1, maxStep))}
             onReset={() => setStep(0)}
