@@ -20,7 +20,7 @@ export function ArrayPointerViz() {
             nextLabel="p++ (다음 칸으로)"
             nextDisabled={index >= arr.length - 1}
         >
-            <div className="flex w-full justify-start sm:justify-center items-end gap-2 md:gap-4 mb-6 min-h-36 overflow-x-auto overflow-y-visible px-1 pb-12">
+            <div className="flex w-full justify-start sm:justify-center items-end gap-2 md:gap-4 mb-6 min-h-36 overflow-visible px-1 pb-12">
                 {arr.map((val, i) => (
                     <div key={i} className="flex flex-col items-center relative gap-2 flex-shrink-0">
                         <motion.div

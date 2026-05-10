@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Play, RotateCcw, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -86,19 +86,35 @@ export function CodePlayground({
         }
     }, [currentStepIndex, effectiveSteps, onStepChange]);
 
-    useEffect(() => {
-        if (!isPlaying) return;
-        const interval = window.setInterval(nextStep, intervalMs);
-        return () => window.clearInterval(interval);
-    }, [isPlaying, nextStep, intervalMs]);
+    const rafRef = useRef<number | null>(null);
+    const lastStepTimeRef = useRef<number | null>(null);
 
     useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.hidden) setIsPlaying(false);
+        if (!isPlaying) {
+            if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+            lastStepTimeRef.current = null;
+            return;
+        }
+
+        const tick = (timestamp: number) => {
+            if (lastStepTimeRef.current === null) {
+                lastStepTimeRef.current = timestamp;
+            }
+            if (timestamp - lastStepTimeRef.current >= intervalMs) {
+                lastStepTimeRef.current = timestamp;
+                nextStep();
+            }
+            rafRef.current = requestAnimationFrame(tick);
         };
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, []);
+
+        rafRef.current = requestAnimationFrame(tick);
+        return () => {
+            if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+            lastStepTimeRef.current = null;
+        };
+    }, [isPlaying, nextStep, intervalMs]);
 
     const lineProps = (lineNumber: number) => {
         const isActive = lineNumber === activeLineNumber;
@@ -235,9 +251,9 @@ export function CodePlayground({
 
                 {/* Visual / Output Panel */}
                 {(visualizer || outputLines.length > 0) && (
-                    <div className="flex-1 min-w-0 bg-[#fffdf5] flex flex-col relative overflow-x-auto overflow-y-visible">
+                    <div className="flex-1 min-w-0 bg-[#fffdf5] flex flex-col relative">
                         {visualizer ? (
-                            <div className="flex-1 relative min-w-0 overflow-x-auto overflow-y-visible flex items-center justify-center p-4 md:p-6 font-body">
+                            <div className="flex-1 relative min-w-0 overflow-visible flex items-center justify-center p-4 md:p-6 font-body">
                                 {visualizer}
                             </div>
                         ) : (

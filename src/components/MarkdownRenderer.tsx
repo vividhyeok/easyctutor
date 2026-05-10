@@ -21,6 +21,7 @@ import { FileIOViz } from './visualizations/FileIOViz';
 import { VariableViz } from './visualizations/VariableViz';
 import { IfElseViz } from './visualizations/IfElseViz';
 import { ScanfViz } from './visualizations/ScanfViz';
+import { OperatorCalcViz } from './visualizations/OperatorCalcViz';
 
 interface MarkdownRendererProps {
     content: string;
@@ -35,11 +36,11 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                         'loopbasicviz', 'arrayflowviz', 'arraysumviz', 'arraymaxviz', 'arraycountviz', 'arrayreverseviz',
                         'stringnullviz', 'pointerbasicviz', 'arraypointerviz',
                         'functioncallviz', 'scopeviz', 'structviz', 'mallocfreeviz', 'fileiovic',
-                        'variableviz', 'ifelseviz', 'scanfviz',
+                        'variableviz', 'ifelseviz', 'scanfviz', 'operatorcalcviz',
                         'LoopBasicViz', 'ArrayFlowViz', 'ArraySumViz', 'ArrayMaxViz', 'ArrayCountViz', 'ArrayReverseViz',
                         'StringNullViz', 'PointerBasicViz', 'ArrayPointerViz',
                         'FunctionCallViz', 'ScopeViz', 'StructViz', 'MallocFreeViz', 'FileIOViz',
-                        'VariableViz', 'IfElseViz', 'ScanfViz'
+                        'VariableViz', 'IfElseViz', 'ScanfViz', 'OperatorCalcViz'
                     ]
                 }],
                 rehypeSlug
@@ -143,6 +144,10 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
                 // Chapter 7
                 ScanfViz: () => <ScanfViz />,
                 scanfviz: () => <ScanfViz />,
+
+                // Chapter 3
+                OperatorCalcViz: () => <OperatorCalcViz />,
+                operatorcalcviz: () => <OperatorCalcViz />,
 
                 // Code blocks: custom black card
                 code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode;[key: string]: any }) => {
